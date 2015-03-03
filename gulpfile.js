@@ -125,7 +125,7 @@ gulp.task('clean', getTask('clean'));
 gulp.task('clean:zip', getTask('clean-zip'));
 gulp.task('delete:build', getTask('delete-build'));
 gulp.task('hash', getTask('hash'));
-gulp.task('copy:tapestry', getTask('copy-files-to-tapestry-app'));
+gulp.task('copy:build', getTask('copy-build-to-destination'));
 gulp.task('compile:jade', getTask('compile-jade'));
 gulp.task('compile:coffee', getTask('compile-coffee'));
 
@@ -361,7 +361,7 @@ gulp.task('watch', function () {
  ============================================================*/
 
 /**
- * Delete build folder, copy, minify, annotate and hash everything, then copy it to the tapestry app
+ * Delete build folder, copy, minify, annotate and hash everything, then copy it to the destination folder
  */
 
 gulp.task('build:prod', function () {
@@ -372,7 +372,7 @@ gulp.task('build:prod', function () {
     'copy',
     'concat',
     'hash',
-    'copy-files-to-tapestry-app'
+    'copy-build-to-destination'
   );
 });
 
@@ -385,12 +385,12 @@ gulp.task('build:windows', function () {
   runSequence(
     'copy',
     'concat',
-    'copy-files-to-tapestry-app'
+    'copy-build-to-destination'
   );
 });
 
 gulp.task('build:only', function () {
-  console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode (without copy to tapestry)'));
+  console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode (without copy to destination folder)'));
   isProduction = true;
   runSequence(
     'copy',
@@ -399,7 +399,7 @@ gulp.task('build:only', function () {
 });
 
 /**
- * Run the minified site in production mode without hashing anything and copying to the tapestry app
+ * Run the minified site in production mode without hashing anything and copying to the destination folder
  */
 gulp.task('run:prod', function () {
   console.log(hintLog('-------------------------------------------------- RUN - Full Production Mode'));
