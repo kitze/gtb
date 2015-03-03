@@ -1,0 +1,6 @@
+app
+build
+node_modules
+custom-gulp-config.json
+copy
+.idea

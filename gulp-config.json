@@ -1,0 +1,23 @@
+{
+  "serverPort": 9015,
+  "openAfterLaunch": false,
+  "tapestryFolder": "testcopy",
+  "imagesFolder": "img",
+  "additionalBowerFiles": {
+    "js": [
+      {
+        "name": "kitze-helpers",
+        "files": [
+          "js/prototypes.js",
+          "js/helpers.js",
+          "js/conlog.js",
+          "js/tapestryHelpers.js",
+          "js/sweeterAlert.js"
+        ],
+        "ignoreMain": true
+      }
+    ],
+    "fonts": []
+  },
+  "liveReload":true
+}
