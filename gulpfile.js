@@ -107,7 +107,8 @@ var config = function () {
     server: serverConfig,
     gulp: gulpConfig,
     dirs: SETTINGS,
-    isProduction: isProduction
+    isProduction: isProduction,
+    replacements:replacements
   };
 };
 
@@ -128,6 +129,7 @@ gulp.task('hash', getTask('hash'));
 gulp.task('copy:build', getTask('copy-build-to-destination'));
 gulp.task('compile:jade', getTask('compile-jade'));
 gulp.task('compile:coffee', getTask('compile-coffee'));
+gulp.task('concat:js', getTask('concat-js'));
 
 gulp.task('tasks', plugins.taskListing);
 
@@ -217,18 +219,6 @@ gulp.task('concat:bower', function () {
     .pipe(plugins.connect.reload());
   return stream;
 });
-
-gulp.task('concat:js', function () {
-
-  console.log('-------------------------------------------------- CONCAT :js');
-  gulp.src([SETTINGS.src.js + 'plugins/*.js', SETTINGS.src.js + 'app.js', SETTINGS.src.js + '*.js', SETTINGS.src.js + '**/*.js'])
-    .pipe(plugins.concat('app.js'))
-    .pipe(plugins.if(isProduction, plugins.ngmin({dynamic: false})))
-    .pipe(plugins.if(isProduction, plugins.uglify()))
-    .pipe(gulp.dest(SETTINGS.build.js))
-    .pipe(plugins.connect.reload());
-});
-
 
 gulp.task('concat:css', ['convert:scss'], function () {
 
