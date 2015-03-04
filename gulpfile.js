@@ -7,26 +7,10 @@ var gulp        = require('gulp'),
     args        = require('yargs').argv,
     map         = require('map-stream'),
     runSequence = require('run-sequence'),
-    plugins     = require('gulp-load-plugins')();
+    plugins     = require('gulp-load-plugins')(),
+    con = require('./functions/console');
 
-var errorLog  = chalk.red.bold,
-    hintLog   = chalk.blue,
-    changeLog = chalk.red;
-
-var bowerFontTemplates =
-    {
-      bootstrap: {
-        name: "bootstrap",
-        directory: "fonts",
-        escapeUrl: /glyphicons/
-      },
-      fontAwesome: {
-        name: "components-font-awesome",
-        directory: "fonts",
-        escapeUrl: /fontawesome/
-      }
-    };
-
+con.err('strasno');
 var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
 if (!fs.existsSync('custom-gulp-config.json')) {
   fs.writeFileSync('custom-gulp-config.json', fs.readFileSync('custom-gulp-template.json'));
@@ -108,7 +92,8 @@ var config = function () {
     gulp: gulpConfig,
     dirs: SETTINGS,
     isProduction: isProduction,
-    replacements:replacements
+    replacements:replacements,
+    bower:bowerConfig
   };
 };
 
@@ -142,6 +127,7 @@ addTask('compile','sass');
 
 gulp.task('concat:css', ['compile:sass'], getTask('/concat/concat-css'));
 addTask('concat','js');
+addTask('concat','bower');
 addTaskCombination('concat','bower','js','css','fonts');
 
 /* Copy */
@@ -166,81 +152,6 @@ gulp.task('watch', getTask('watch'));
 gulp.task('tasks', plugins.taskListing);
 
 /* ================================================================================= */
-
-gulp.task('concat:bower', function () {
-  console.log('-------------------------------------------------- CONCAT :bower');
-
-  function keepOriginal(url) {
-    return _.some(gulpConfig.additionalBowerFiles.fonts, function (font) {
-      return font.escapeUrl.test(url);
-    });
-  }
-
-  var jsFilter = plugins.filter('**/*.js'),
-      cssFilter = plugins.filter('**/*.css'),
-      assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
-
-  /**
-   * Ignore the files defined in the 'main' property of a bower.json library in case we need to use different files from the library (defined in gulp-config.json)
-   */
-  var bowerLibraries = _(bowerFiles(bowerConfig).filter(function (file) {
-    return !_.some(gulpConfig.additionalBowerFiles.js, function (jsfile) {
-      return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
-    });
-  }));
-
-  /**
-   * Get additional files for libraries that are defined in gulp-config.json
-   */
-  var bowerAdditional = getAdditionalLibraries(gulpConfig.additionalBowerFiles.js);
-  var allFiles = _(bowerLibraries).compact().concat(bowerAdditional);
-
-  _.each(allFiles, function (file) {
-    _.each(bowerFontTemplates, function (template) {
-      if (file.indexOf(template.name) !== -1) {
-        gulpConfig.additionalBowerFiles.fonts.push(template);
-      }
-    })
-  });
-
-  var stream = gulp.src(allFiles, {base: SETTINGS.src.bower})
-    .pipe(jsFilter)
-    .pipe(plugins.concat('lib.js'))
-    .pipe(plugins.if(isProduction, plugins.uglify()))
-    .pipe(gulp.dest(SETTINGS.build.bower))
-    .pipe(jsFilter.restore())
-    .pipe(cssFilter)
-    .pipe(map(function (file, callback) {
-      var relativePath = path.dirname(path.relative(path.resolve(SETTINGS.src.bower), file.path));
-      // CSS path resolving
-      // Taken from https://github.com/enyojs/enyo/blob/master/tools/minifier/minify.js
-      var contents = file.contents.toString().replace(/url\([^)]*\)/g, function (match) {
-        // find the url path, ignore quotes in url string
-        var matches = /url\s*\(\s*(('([^']*)')|("([^"]*)")|([^'"]*))\s*\)/.exec(match),
-            url = matches[3] || matches[5] || matches[6];
-        // Don't modify data, http(s) and protocol agnostic urls
-        if (/^data:/.test(url) || /^http(:?s)?:/.test(url) || /^\/\//.test(url) || keepOriginal(url))
-          return 'url(' + url + ')';
-        return 'url(' + path.join(path.relative(SETTINGS.build.bower, SETTINGS.build.app), SETTINGS.build.bower, relativePath, url) + ')';
-      });
-      file.contents = new Buffer(contents);
-
-      callback(null, file);
-    }))
-    .pipe(plugins.concat('lib.css'))
-    .pipe(plugins.if(isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-    .pipe(gulp.dest(SETTINGS.build.css))
-    .pipe(cssFilter.restore())
-    .pipe(assetsFilter)
-    .pipe(gulp.dest(SETTINGS.build.bower))
-    .pipe(assetsFilter.restore())
-    .pipe(plugins.connect.reload());
-  return stream;
-});
-
-/*============================================================
- =                             Start                          =
- ============================================================*/
 
 /**
  * Delete build folder, copy, minify, annotate and hash everything, then copy it to the destination folder
