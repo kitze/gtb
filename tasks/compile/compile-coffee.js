@@ -1,5 +1,5 @@
 module.exports = function (gulp, plugins, config) {
-  var fileDir = require("../functions/file-dir")(config);
+  var fileDir = require("../../functions/file-dir")(config);
   var minifyHtmlOptions = {
     comments: false,
     quotes: true,

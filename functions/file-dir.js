@@ -1,4 +1,5 @@
 module.exports = function (config) {
+  var _ = require('underscore');
   function fd (fileType, directory, deep) {
     var arr = [];
     if (typeof fileType === 'string' && (!directory || typeof directory === 'string')) {

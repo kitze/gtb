@@ -98,7 +98,7 @@ var serverConfig = {
 var isProduction = args.type === 'production';
 
 /*============================================================
- =>                          Load all gulp tasks
+ =>                 Load all gulp tasks
  ============================================================*/
 
 var gulpTasksFolder = './tasks';
@@ -116,38 +116,56 @@ function getTask(task) {
   return require(gulpTasksFolder + "/" + task)(gulp, plugins, config());
 }
 
-/* Task List */
+function addTask(folder,task){
+  var taskName = task?(folder+":"+task):folder;
+  var taskFolder = "/"+folder+"/"+(task?(folder+"-"+task):folder);
+  gulp.task(taskName, getTask(taskFolder));
+}
+
+function addTaskCombination(name,arr){
+  gulp.task(name, _(arr).map(function(m){return name+":"+m}))
+}
+
+/* ================================= Task List ============================================== */
+
+/* Clean */
+addTask('clean');
+addTask('clean', 'build');
+addTask('clean', 'zip');
+
+/* Compile */
+addTask('compile','coffee');
+addTask('compile','jade');
+addTask('compile','sass');
+
+/* Concat */
+
+gulp.task('concat:css', ['compile:sass'], getTask('/concat/concat-css'));
+addTask('concat','js');
+addTaskCombination('concat','bower','js','css','fonts');
+
+/* Copy */
+
+addTask('copy','build');
+addTask('copy','custom');
+addTask('copy','font');
+addTask('copy','fonts');
+addTask('copy','html');
+addTask('copy','html-root');
+addTask('copy','images');
+addTask('copy','json');
+addTaskCombination('copy',['html','custom','images', 'json', 'fonts', 'font', 'html:root']);
+
+/* Other */
 
 gulp.task('server', getTask('server'));
 gulp.task('image:min', getTask('image-min'));
-gulp.task('convert:scss', getTask('convert-scss'));
 gulp.task('zip', getTask('zip'));
-gulp.task('clean', getTask('clean'));
-gulp.task('clean:zip', getTask('clean-zip'));
-gulp.task('delete:build', getTask('delete-build'));
 gulp.task('hash', getTask('hash'));
-gulp.task('copy:build', getTask('copy-build-to-destination'));
-gulp.task('compile:jade', getTask('compile-jade'));
-gulp.task('compile:coffee', getTask('compile-coffee'));
-gulp.task('concat:js', getTask('concat-js'));
-
+gulp.task('watch', getTask('watch'));
 gulp.task('tasks', plugins.taskListing);
 
-/*============================================================
- =                          Concat                           =
- ============================================================*/
-
-gulp.task('concat', ['concat:bower', 'concat:js', 'concat:css', 'copy:fonts']);
-
-function getAdditionalLibraries(obj) {
-  var libs = [];
-  _.each(obj, function (library) {
-    _.each(library.files, function (file) {
-      libs.push(SETTINGS.src.bower + library.name + "/" + file);
-    });
-  });
-  return libs;
-}
+/* ================================================================================= */
 
 gulp.task('concat:bower', function () {
   console.log('-------------------------------------------------- CONCAT :bower');
@@ -218,132 +236,6 @@ gulp.task('concat:bower', function () {
     .pipe(assetsFilter.restore())
     .pipe(plugins.connect.reload());
   return stream;
-});
-
-gulp.task('concat:css', ['convert:scss'], function () {
-
-  console.log('-------------------------------------------------- CONCAT :css ');
-  gulp.src([SETTINGS.src.css + 'fonts.css', SETTINGS.scss + 'application.css', SETTINGS.src.css + '*.css'])
-    .pipe(plugins.concat('styles.css'))
-    .pipe(plugins.if(isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-    .pipe(plugins.if(isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-    .pipe(gulp.dest(SETTINGS.build.css))
-    .pipe(plugins.connect.reload());
-});
-
-/*============================================================
- =                           Copy                            =
- ============================================================*/
-
-gulp.task('copy', ['copy:html', 'copy:custom', 'copy:images', 'copy:json', 'copy:fonts', 'copy:font', 'copy:html:root']);
-
-gulp.task('copy:custom', function () {
-  console.log('-------------------------------------------------- COPY :custom');
-  gulp.src([SETTINGS.src.custom + '*.*', SETTINGS.src.custom + '**/*.*'])
-    .pipe(gulp.dest(SETTINGS.build.bower));
-});
-
-gulp.task('copy:json', function () {
-  console.log('-------------------------------------------------- COPY :json');
-  gulp.src([SETTINGS.src.json + '*.*', SETTINGS.src.json + '**/*.*'])
-    .pipe(gulp.dest(SETTINGS.build.app))
-    .pipe(plugins.connect.reload());
-});
-
-gulp.task('copy:html', function () {
-  console.log('-------------------------------------------------- COPY :html');
-  gulp.src([SETTINGS.src.templates + '*.html', SETTINGS.src.templates + '**/*.html'])
-    .pipe(plugins.if(isProduction, plugins.minifyHtml({
-      comments: false,
-      quotes: true,
-      spare: true,
-      empty: true,
-      cdata: true
-    })))
-    .pipe(gulp.dest(SETTINGS.build.templates))
-    .pipe(plugins.connect.reload());
-});
-
-gulp.task('copy:html:root', function () {
-  console.log('-------------------------------------------------- COPY :html:root');
-  gulp.src(SETTINGS.src.app + '*.html')
-    .pipe(plugins.if(isProduction, plugins.minifyHtml({
-      comments: false,
-      quotes: true,
-      spare: true,
-      empty: true,
-      cdata: true
-    })))
-    .pipe(gulp.dest(SETTINGS.build.app))
-    .pipe(plugins.connect.reload());
-});
-
-gulp.task('copy:images', function () {
-  console.log('-------------------------------------------------- COPY :images');
-  gulp.src([SETTINGS.src.images + '*.*', SETTINGS.src.images + '**/*.*'])
-    .pipe(gulp.dest(SETTINGS.build.images));
-});
-
-gulp.task('copy:fonts', function () {
-  console.log('-------------------------------------------------- COPY :fonts');
-  var allFonts = [SETTINGS.src.fonts + '*', SETTINGS.src.fonts + '**/*'].concat(_.map(gulpConfig.additionalBowerFiles.fonts, function (fontLibrary) {
-    return SETTINGS.src.bower + fontLibrary.name + "/" + fontLibrary.directory + "/" + "*"
-  }));
-  gulp.src(allFonts)
-    .pipe(gulp.dest(SETTINGS.build.fonts));
-});
-
-gulp.task('copy:font', function () {
-  console.log('-------------------------------------------------- COPY :fonts');
-  gulp.src([SETTINGS.src.font + '*', SETTINGS.src.font + '**/*'])
-    .pipe(gulp.dest(SETTINGS.build.font));
-});
-
-
-/*=========================================================================================================
- =												Watch
- =========================================================================================================*/
-
-gulp.task('watch', function () {
-
-  console.log('watching all the files.....');
-
-  var watchedFiles = [];
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.css + '*.css', SETTINGS.src.css + '**/*.css'], ['concat:css']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.css + '*.scss', SETTINGS.src.css + '**/*.scss', SETTINGS.src.css + '*.sass', SETTINGS.src.css + '**/*.sass'], ['concat:css']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.js + '*.js', SETTINGS.src.js + '**/*.js'], ['concat:js']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.app + '*.html', SETTINGS.src.app + '**/*.html'], ['copy:html:root']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.images + '*.*', SETTINGS.src.images + '**/*.*'], ['copy:images']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.fonts + '*.*', SETTINGS.src.fonts + '**/*.*'], ['copy:fonts']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.bower + '*.js', SETTINGS.src.bower + '**/*.js'], ['concat:bower']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.templates + '*.html', SETTINGS.src.templates + '**/*.html'], ['copy:html']));
-
-  watchedFiles.push(gulp.watch([SETTINGS.src.json + '*.json', SETTINGS.src.json + '**/*.json'], ['copy:json']));
-
-
-  // Just to add log messages on Terminal, in case any file is changed
-  var onChange = function (event) {
-    if (event.type === 'deleted') {
-      runSequence('clean');
-      setTimeout(function () {
-        runSequence('copy', 'concat', 'watch');
-      }, 500);
-    }
-    console.log(changeLog('-------------------------------------------------->>>> File ' + event.path + ' was ------->>>> ' + event.type));
-  };
-
-  watchedFiles.forEach(function (watchedFile) {
-    watchedFile.on('change', onChange);
-  });
-
 });
 
 /*============================================================
