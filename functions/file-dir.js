@@ -1,12 +1,13 @@
 module.exports = function (config) {
   var _ = require('underscore');
-  function fd (fileType, directory, deep) {
+
+  function fd(fileType, directory, deep) {
     var arr = [];
     if (typeof fileType === 'string' && (!directory || typeof directory === 'string')) {
       var dir = config.dirs.src[directory ? directory : fileType];
-      arr = [dir + '*.' + fileType];
+      arr = [config.dirs.prefix + config.dirs.src.app + dir + '/*.' + fileType];
       if (deep !== false) {
-        arr.push(dir + '**/*.' + fileType);
+        arr.push(config.dirs.prefix + config.dirs.src.app + dir + '/**/*.' + fileType);
       }
     }
     else if (typeof fileType === 'object' && (!directory || typeof directory === 'string')) {
@@ -21,5 +22,6 @@ module.exports = function (config) {
     }
     return arr;
   }
+
   return fd;
 };

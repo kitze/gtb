@@ -8,9 +8,9 @@ var gulp        = require('gulp'),
     map         = require('map-stream'),
     runSequence = require('run-sequence'),
     plugins     = require('gulp-load-plugins')(),
-    con = require('./functions/console');
+    con         = require('./functions/console');
+h = require('./functions/helpers');
 
-con.err('strasno');
 var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
 if (!fs.existsSync('custom-gulp-config.json')) {
   fs.writeFileSync('custom-gulp-config.json', fs.readFileSync('custom-gulp-template.json'));
@@ -28,16 +28,17 @@ var replacements = [
 ];
 
 var SETTINGS = {
+  prefix:'',
   src: {
     app: 'app/',
-    css: 'app/css/',
-    js: 'app/js/',
-    templates: 'app/templates/',
+    css: 'css',
+    js: 'js',
+    templates: 'templates',
     images: 'app/' + gulpConfig.imagesFolder + "/",
-    custom: 'app/custom/',
-    fonts: 'app/fonts/',
-    json: 'app/json',
-    font: 'app/font/',
+    custom: 'custom',
+    fonts: 'fonts',
+    json: 'json',
+    font: 'font',
     bower: 'bower_components/'
   },
   build: {
@@ -92,8 +93,8 @@ var config = function () {
     gulp: gulpConfig,
     dirs: SETTINGS,
     isProduction: isProduction,
-    replacements:replacements,
-    bower:bowerConfig
+    replacements: replacements,
+    bower: bowerConfig
   };
 };
 
@@ -101,14 +102,16 @@ function getTask(task) {
   return require(gulpTasksFolder + "/" + task)(gulp, plugins, config());
 }
 
-function addTask(folder,task){
-  var taskName = task?(folder+":"+task):folder;
-  var taskFolder = "/"+folder+"/"+(task?(folder+"-"+task):folder);
+function addTask(folder, task) {
+  var taskName = task ? (folder + ":" + task) : folder;
+  var taskFolder = "/" + folder + "/" + (task ? (folder + "-" + task) : folder);
   gulp.task(taskName, getTask(taskFolder));
 }
 
-function addTaskCombination(name,arr){
-  gulp.task(name, _(arr).map(function(m){return name+":"+m}))
+function addTaskCombination(name, arr) {
+  gulp.task(name, _(arr).map(function (m) {
+    return name + ":" + m
+  }))
 }
 
 /* ================================= Task List ============================================== */
@@ -119,28 +122,28 @@ addTask('clean', 'build');
 addTask('clean', 'zip');
 
 /* Compile */
-addTask('compile','coffee');
-addTask('compile','jade');
-addTask('compile','sass');
+addTask('compile', 'coffee');
+addTask('compile', 'jade');
+addTask('compile', 'sass');
 
 /* Concat */
 
 gulp.task('concat:css', ['compile:sass'], getTask('/concat/concat-css'));
-addTask('concat','js');
-addTask('concat','bower');
-addTaskCombination('concat','bower','js','css','fonts');
+addTask('concat', 'js');
+addTask('concat', 'bower');
+addTaskCombination('concat', ['bower', 'js', 'css']);
 
 /* Copy */
 
-addTask('copy','build');
-addTask('copy','custom');
-addTask('copy','font');
-addTask('copy','fonts');
-addTask('copy','html');
-addTask('copy','html-root');
-addTask('copy','images');
-addTask('copy','json');
-addTaskCombination('copy',['html','custom','images', 'json', 'fonts', 'font', 'html:root']);
+addTask('copy', 'build');
+addTask('copy', 'custom');
+addTask('copy', 'font');
+addTask('copy', 'fonts');
+addTask('copy', 'html');
+addTask('copy', 'html-root');
+addTask('copy', 'images');
+addTask('copy', 'json');
+addTaskCombination('copy', ['html', 'custom', 'images', 'json', 'fonts', 'font', 'html-root']);
 
 /* Other */
 
@@ -158,7 +161,7 @@ gulp.task('tasks', plugins.taskListing);
  */
 
 gulp.task('build:prod', function () {
-  console.log(hintLog('-------------------------------------------------- BUILD - Full Production Mode'));
+  //console.log(hintLog('-------------------------------------------------- BUILD - Full Production Mode'));
   isProduction = true;
   runSequence(
     'delete-build-folder',
@@ -173,7 +176,7 @@ gulp.task('build:prod', function () {
  * Builds the version without hash and delete-build-folder (linux only)
  */
 gulp.task('build:windows', function () {
-  console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode'));
+  //console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode'));
   isProduction = true;
   runSequence(
     'copy',
@@ -183,7 +186,7 @@ gulp.task('build:windows', function () {
 });
 
 gulp.task('build:only', function () {
-  console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode (without copy to destination folder)'));
+  //console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode (without copy to destination folder)'));
   isProduction = true;
   runSequence(
     'copy',
@@ -192,10 +195,18 @@ gulp.task('build:only', function () {
 });
 
 /**
+ * Builds the app in default mode
+ */
+gulp.task('build', function () {
+  //console.log(hintLog('-------------------------------------------------- BUILD - Development Mode'));
+  runSequence('copy', 'concat', 'watch');
+});
+
+/**
  * Run the minified site in production mode without hashing anything and copying to the destination folder
  */
 gulp.task('run:prod', function () {
-  console.log(hintLog('-------------------------------------------------- RUN - Full Production Mode'));
+  //console.log(hintLog('-------------------------------------------------- RUN - Full Production Mode'));
   isProduction = true;
   runSequence(
     'copy',
