@@ -1,13 +1,16 @@
 module.exports = function (config) {
   var _ = require('underscore');
+  var dir = require('../functions/dir')(config);
 
   function fd(fileType, directory, deep) {
     var arr = [];
     if (typeof fileType === 'string' && (!directory || typeof directory === 'string')) {
-      var dir = config.dirs.src[directory ? directory : fileType];
-      arr = [config.dirs.prefix + config.dirs.src.app + dir + '/*.' + fileType];
+      var d = directory===''?'':config.dirs[directory ? directory : fileType];
+      console.log('d',d);
+      d = d!==''?(d+'/'):'';
+      arr = [dir(d+ '*.' + fileType)];
       if (deep !== false) {
-        arr.push(config.dirs.prefix + config.dirs.src.app + dir + '/**/*.' + fileType);
+        arr.push(dir(d+'**/*.' + fileType));
       }
     }
     else if (typeof fileType === 'object' && (!directory || typeof directory === 'string')) {
@@ -20,6 +23,7 @@ module.exports = function (config) {
         arr = arr.concat(fd(fileType, dir));
       });
     }
+    console .log('arr',arr);
     return arr;
   }
 

@@ -1,4 +1,4 @@
-module.exports = function () {
+module.exports = function (gulp, plugins, config) {
   var exec = require('../functions/exec');
-  exec("./minify.sh");
+  exec(config.dirs.prefix + "minify.sh");
 };

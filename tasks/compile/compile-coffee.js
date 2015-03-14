@@ -1,5 +1,7 @@
 module.exports = function (gulp, plugins, config) {
   var fileDir = require("../../functions/file-dir")(config);
+  var bdir = require('../../functions/build-dir')(config);
+
   var minifyHtmlOptions = {
     comments: false,
     quotes: true,
@@ -7,6 +9,7 @@ module.exports = function (gulp, plugins, config) {
     empty: true,
     cdata: true
   };
+
   return function () {
     gulp.src(fileDir('coffee', 'js'))
       .pipe(plugins.plumber())
@@ -14,7 +17,7 @@ module.exports = function (gulp, plugins, config) {
         bare: false
       }))
       .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
-      .pipe(gulp.dest(config.dirs.build.js))
+      .pipe(gulp.dest(bdir(config.dirs.js)))
       .pipe(plugins.connect.reload());
   }
 };

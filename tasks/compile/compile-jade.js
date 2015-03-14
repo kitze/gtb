@@ -1,5 +1,7 @@
 module.exports = function (gulp, plugins, config) {
   var fileDir = require("../../functions/file-dir")(config);
+  var bdir = require('../../functions/build-dir')(config);
+
   var minifyHtmlOptions = {
     comments: false,
     quotes: true,
@@ -9,14 +11,15 @@ module.exports = function (gulp, plugins, config) {
   };
 
   function compileDirectory(dir, dest) {
-    console.log('compiling directory!');
+    console.log('(dir)',(dir));
+
     gulp.src(dir)
       .pipe(plugins.plumber())
       .pipe(plugins.jade({
         pretty: true
       }))
       .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
-      .pipe(gulp.dest(config.dirs.build[dest]))
+      .pipe(gulp.dest(bdir(config.dirs[dest])))
       .pipe(plugins.connect.reload());
   }
 

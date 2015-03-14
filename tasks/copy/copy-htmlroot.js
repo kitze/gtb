@@ -1,4 +1,7 @@
 module.exports = function (gulp, plugins, config) {
+  var dir = require('../../functions/dir')(config);
+  var bdir = require('../../functions/build-dir')(config);
+
   var minifyHtmlOptions = {
     comments: false,
     quotes: true,
@@ -7,9 +10,9 @@ module.exports = function (gulp, plugins, config) {
     cdata: true
   };
   return function () {
-    gulp.src(config.dirs.src.app + '*.html')
+    gulp.src(dir('*.html'))
       .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
-      .pipe(gulp.dest(config.dirs.build.app))
+      .pipe(gulp.dest(bdir(config.dirs.root)))
       .pipe(plugins.connect.reload());
   }
 };

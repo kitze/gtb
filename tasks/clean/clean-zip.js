@@ -1,6 +1,6 @@
-module.exports = function () {
+module.exports = function (gulp, plugins, config) {
   var cleanFiles = require('../../functions/clean-files');
   return function (){
-    cleanFiles(['zip/**/*', '!zip/build-*.zip'], 'zip');
+    cleanFiles([config.dirs.prefix+'zip/**/*', config.dirs.prefix+'!zip/build-*.zip'], 'zip');
   }
 };

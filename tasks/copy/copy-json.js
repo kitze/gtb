@@ -1,8 +1,10 @@
 module.exports = function (gulp, plugins, config) {
   var fileDir = require('../../functions/file-dir')(config);
+  var bdir = require('../../functions/build-dir')(config);
+
   return function (){
     gulp.src(fileDir('json'))
-      .pipe(gulp.dest(config.dirs.build.app))
+      .pipe(gulp.dest(bdir(config.dirs.json)))
       .pipe(plugins.connect.reload());
   }
 };

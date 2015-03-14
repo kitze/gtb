@@ -26,38 +26,28 @@ var replacements = [
   ["G_SERVER_PORT", gulpConfig.serverPort],
   ["G_DEPENDENCIES", JSON.stringify(dependencies)]
 ];
-
+var prefix = gulpConfig.prefix !== '' ? (gulpConfig.prefix + "/") : '';
 var SETTINGS = {
-  prefix:gulpConfig.prefix,
-  src: {
-    app: 'app/',
-    css: 'css',
-    js: 'js',
-    templates: 'templates',
-    images: 'app/' + gulpConfig.imagesFolder + "/",
-    custom: 'custom',
-    fonts: 'fonts',
-    json: 'json',
-    font: 'font',
-    bower: 'bower_components/'
-  },
-  build: {
-    app: 'build/',
-    css: 'build/css/',
-    js: 'build/js/',
-    json: 'build/json',
-    templates: 'build/templates/',
-    images: 'build/' + gulpConfig.imagesFolder + '/',
-    fonts: 'build/fonts/',
-    font: 'build/font/',
-    bower: 'build/js/'
-  },
-  scss: 'scss/'
+  root: '/',
+  prefix: prefix,
+  app: 'app',
+  build: 'build',
+  css: 'css',
+  js: 'js',
+  templates: 'templates',
+  images: gulpConfig.imagesFolder,
+  custom: 'custom',
+  fonts: 'fonts',
+  json: 'json',
+  font: 'font',
+  bower: 'bower_components',
+  scss: 'scss',
+  zip:'zip'
 };
 
 var bowerConfig = {
   paths: {
-    bowerDirectory: SETTINGS.src.bower,
+    bowerDirectory: SETTINGS.bower,
     bowerrc: '.bowerrc',
     bowerJson: 'bower.json'
   }
@@ -65,15 +55,14 @@ var bowerConfig = {
 
 //server and live reload config
 var serverConfig = {
-  root: SETTINGS.build.app,
+  root: prefix + SETTINGS.build,
   host: 'localhost',
   livereload: gulpConfig.liveReload,
   middleware: function () {
     return [function (req, res, next) {
       if (req.url.indexOf('.') === -1)
-        fs.createReadStream(SETTINGS.build.app + "index.html").pipe(res);
+        fs.createReadStream(prefix + SETTINGS.build + "/" + "index.html").pipe(res);
       return next();
-
     }];
   },
   port: gulpConfig.serverPort
@@ -136,23 +125,22 @@ addTaskCombination('concat', ['bower', 'js', 'css']);
 /* Copy */
 
 addTask('copy', 'build');
-addTask('copy', 'custom');
 addTask('copy', 'font');
 addTask('copy', 'fonts');
 addTask('copy', 'html');
-addTask('copy', 'html-root');
+addTask('copy', 'htmlroot');
 addTask('copy', 'images');
 addTask('copy', 'json');
-addTaskCombination('copy', ['html', 'custom', 'images', 'json', 'fonts', 'font', 'html-root']);
+addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot']);
 
 /* Other */
 
 gulp.task('server', getTask('server'));
 gulp.task('image:min', getTask('image-min'));
 gulp.task('zip', getTask('zip'));
-gulp.task('hash', getTask('hash'));
+//gulp.task('hash', getTask('hash'));
 gulp.task('watch', getTask('watch'));
-gulp.task('tasks', plugins.taskListing);
+//gulp.task('tasks', plugins.taskListing);
 
 /* ================================================================================= */
 

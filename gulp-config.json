@@ -2,7 +2,7 @@
   "serverPort": 9015,
   "openAfterLaunch": false,
   "copyToFolder": "testcopy",
-  "prefix":"",
+  "prefix":"../",
   "imagesFolder": "img",
   "additionalBowerFiles": {
     "js": [

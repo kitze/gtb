@@ -1,6 +1,7 @@
 module.exports = function (gulp, plugins, config) {
   var fileDir = require('../../functions/file-dir')(config);
-  console.log('file dir is', fileDir('html','templates'));
+  var bdir = require('../../functions/build-dir')(config);
+
   var minifyHtmlOptions = {
     comments: false,
     quotes: true,
@@ -9,11 +10,9 @@ module.exports = function (gulp, plugins, config) {
     cdata: true
   };
   return function () {
-    var fd = fileDir('html', 'templates');
-    console.log('fd',fd);
-    gulp.src(fd)
+    gulp.src(fileDir('html', 'templates'))
       .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
-      .pipe(gulp.dest(config.dirs.build.templates))
+      .pipe(gulp.dest(bdir(config.dirs.templates)))
       .pipe(plugins.connect.reload());
   }
 };
