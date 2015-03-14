@@ -28,7 +28,7 @@ var replacements = [
 ];
 
 var SETTINGS = {
-  prefix:'',
+  prefix:gulpConfig.prefix,
   src: {
     app: 'app/',
     css: 'css',

@@ -7,8 +7,9 @@ module.exports = function (gulp, plugins, config) {
       //console.log('copying to destination folder');
       setTimeout(function () {
         ncp('build', config.gulp.copyToFolder, function (err) {
-          if (err) return console.error(err);
-          //console.log('done copying to destination folder');
+          if (err) {
+            return console.error(err);
+          }
         });
       }, 12000);
     }

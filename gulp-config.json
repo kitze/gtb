@@ -1,7 +1,8 @@
 {
   "serverPort": 9015,
   "openAfterLaunch": false,
-  "tapestryFolder": "testcopy",
+  "copyToFolder": "testcopy",
+  "prefix":"",
   "imagesFolder": "img",
   "additionalBowerFiles": {
     "js": [

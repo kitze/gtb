@@ -2,6 +2,7 @@
   "serverPort": 9000,
   "openAfterLaunch":false,
   "ignore":false,
+  "prefix":"",
   "ignoredFiles":{
     "js":[
 
