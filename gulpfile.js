@@ -45,29 +45,6 @@ var SETTINGS = {
   zip:'zip'
 };
 
-var bowerConfig = {
-  paths: {
-    bowerDirectory: SETTINGS.bower,
-    bowerrc: '.bowerrc',
-    bowerJson: 'bower.json'
-  }
-};
-
-//server and live reload config
-var serverConfig = {
-  root: prefix + SETTINGS.build,
-  host: 'localhost',
-  livereload: gulpConfig.liveReload,
-  middleware: function () {
-    return [function (req, res, next) {
-      if (req.url.indexOf('.') === -1)
-        fs.createReadStream(prefix + SETTINGS.build + "/" + "index.html").pipe(res);
-      return next();
-    }];
-  },
-  port: gulpConfig.serverPort
-};
-
 // Flag for generating production code.
 var isProduction = args.type === 'production';
 
@@ -76,16 +53,34 @@ var isProduction = args.type === 'production';
  ============================================================*/
 
 var gulpTasksFolder = './tasks';
-var config = function () {
+function config() {
   return {
-    server: serverConfig,
     gulp: gulpConfig,
     dirs: SETTINGS,
     isProduction: isProduction,
     replacements: replacements,
-    bower: bowerConfig
-  };
-};
+    server: {
+      root: prefix + SETTINGS.build,
+      host: 'localhost',
+      livereload: gulpConfig.liveReload,
+      middleware: function () {
+        return [function (req, res, next) {
+          if (req.url.indexOf('.') === -1)
+            fs.createReadStream(prefix + SETTINGS.build + "/" + "index.html").pipe(res);
+          return next();
+        }];
+      },
+      port: gulpConfig.serverPort
+    },
+    bower: {
+      paths: {
+        bowerDirectory: prefix + SETTINGS.bower,
+        bowerrc: '.bowerrc',
+        bowerJson: 'bower.json'
+      }
+    }
+  }
+}
 
 function getTask(task) {
   return require(gulpTasksFolder + "/" + task)(gulp, plugins, config());
