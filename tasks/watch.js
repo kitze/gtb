@@ -30,7 +30,7 @@ module.exports = function (gulp, plugins, config) {
     watchers.copyAll('fonts');
     watchers.copy('json');
     watchers.copy('html', 'templates');
-    watchers.custom('copy:html:root', 'html', 'app');
+    watchers.custom('copy:htmlroot', 'html', 'root');
     watchers.custom('concat:bower', 'js', 'bower');
     watchedFiles.push(gulp.watch(fileDir(['scss', 'sass'], 'css'), ['concat:css']));
     watchedFiles.push(gulp.watch(fileDir('jade', ['app', 'templates']), ['compile:jade']));
