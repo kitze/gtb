@@ -6,7 +6,6 @@ module.exports = function (config) {
     var arr = [];
     if (typeof fileType === 'string' && (!directory || typeof directory === 'string')) {
       var d = directory===''?'':config.dirs[directory ? directory : fileType];
-      console.log('d',d);
       d = d!==''?(d+'/'):'';
       arr = [dir(d+ '*.' + fileType)];
       if (deep !== false) {
@@ -23,7 +22,6 @@ module.exports = function (config) {
         arr = arr.concat(fd(fileType, dir));
       });
     }
-    console .log('arr',arr);
     return arr;
   }
 

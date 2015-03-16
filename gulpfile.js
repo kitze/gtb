@@ -8,8 +8,8 @@ var gulp        = require('gulp'),
     map         = require('map-stream'),
     runSequence = require('run-sequence'),
     plugins     = require('gulp-load-plugins')(),
-    con         = require('./functions/console');
-h = require('./functions/helpers');
+    con         = require('./functions/console'),
+    h = require('./functions/helpers');
 
 var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
 if (!fs.existsSync('custom-gulp-config.json')) {
@@ -27,6 +27,9 @@ var replacements = [
   ["G_DEPENDENCIES", JSON.stringify(dependencies)]
 ];
 var prefix = gulpConfig.prefix !== '' ? (gulpConfig.prefix + "/") : '';
+con.log('prefix =============== ' + prefix);
+
+
 var SETTINGS = {
   root: '/',
   prefix: prefix,
@@ -76,7 +79,7 @@ function config() {
       paths: {
         bowerDirectory: prefix + SETTINGS.bower,
         bowerrc: '.bowerrc',
-        bowerJson: 'bower.json'
+        bowerJson: prefix + 'bower.json'
       }
     }
   }
@@ -121,7 +124,7 @@ addTaskCombination('concat', ['bower', 'js', 'css']);
 
 addTask('copy', 'build');
 addTask('copy', 'font');
-addTask('copy', 'fonts');
+gulp.task('copy:fonts', ['concat:bower'], getTask('/copy/copy-fonts'));
 addTask('copy', 'html');
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');

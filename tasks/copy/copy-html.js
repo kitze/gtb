@@ -9,6 +9,7 @@ module.exports = function (gulp, plugins, config) {
     empty: true,
     cdata: true
   };
+
   return function () {
     gulp.src(fileDir('html', 'templates'))
       .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))

@@ -11,8 +11,6 @@ module.exports = function (gulp, plugins, config) {
   };
 
   function compileDirectory(dir, dest) {
-    console.log('(dir)',(dir));
-
     gulp.src(dir)
       .pipe(plugins.plumber())
       .pipe(plugins.jade({

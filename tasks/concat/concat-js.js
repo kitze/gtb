@@ -6,7 +6,6 @@ module.exports = function (gulp, plugins, config) {
   var jsDir = dir(config.dirs.js);
 
   return function () {
-    console.log('concating js');
     var js = gulp.src([jsDir + 'plugins/*.js', jsDir + 'app.js'].concat(fileDir("js", "js"))).pipe(plugins.concat('app.js'));
 
     _(config.replacements).each(function (replacement) {js = js.pipe(plugins.replace(replacement[0], replacement[1]))});

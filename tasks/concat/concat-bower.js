@@ -1,6 +1,11 @@
 module.exports = function (gulp, plugins, config) {
   var bowerFiles = require('main-bower-files');
-  var getAdditionalLibraries = require('../../functions/get-additional-libraries');
+  var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
+  var _ = require('underscore');
+  var map = require('map-stream');
+  var path = require('path');
+  var bdir = require('../../functions/build-dir')(config);
+  var dir = require('../../functions/dir')(config);
 
   var bowerFontTemplates =
       {
@@ -10,7 +15,7 @@ module.exports = function (gulp, plugins, config) {
           escapeUrl: /glyphicons/
         },
         fontAwesome: {
-          name: "components-font-awesome",
+          name: "fontawesome",
           directory: "fonts",
           escapeUrl: /fontawesome/
         }
@@ -24,7 +29,7 @@ module.exports = function (gulp, plugins, config) {
 
   return function () {
     var jsFilter = plugins.filter('**/*.js'),
-        cssFilter = plugins.filter('**/*.css'),
+        cssFilter = plugins.filter(['*.css', '**/*.css']),
         assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
 
     /**
@@ -50,15 +55,17 @@ module.exports = function (gulp, plugins, config) {
       })
     });
 
-    return gulp.src(allFiles, {base: config.dirs.src.bower})
+    gulp.src(allFiles)
       .pipe(jsFilter)
+      .pipe(plugins.plumber())
       .pipe(plugins.concat('lib.js'))
       .pipe(plugins.if(config.isProduction, plugins.uglify()))
-      .pipe(gulp.dest(config.dirs.build.bower))
-      .pipe(jsFilter.restore())
+      .pipe(gulp.dest(bdir(config.dirs.js)));
+
+    gulp.src(allFiles)
       .pipe(cssFilter)
       .pipe(map(function (file, callback) {
-        var relativePath = path.dirname(path.relative(path.resolve(config.dirs.src.bower), file.path));
+        var relativePath = path.dirname(path.relative(path.resolve(config.dirs.js), file.path));
         var contents = file.contents.toString().replace(/url\([^)]*\)/g, function (match) {
           // find the url path, ignore quotes in url string
           var matches = /url\s*\(\s*(('([^']*)')|("([^"]*)")|([^'"]*))\s*\)/.exec(match),
@@ -66,18 +73,20 @@ module.exports = function (gulp, plugins, config) {
           // Don't modify data, http(s) and protocol agnostic urls
           if (/^data:/.test(url) || /^http(:?s)?:/.test(url) || /^\/\//.test(url) || keepOriginal(url))
             return 'url(' + url + ')';
-          return 'url(' + path.join(path.relative(config.dirs.build.bower, config.dirs.build.app), config.dirs.build.bower, relativePath, url) + ')';
+          return 'url(' + path.join(path.relative(config.dirs.js, config.dirs.app), config.dirs.js, relativePath, url) + ')';
         });
+
         file.contents = new Buffer(contents);
 
         callback(null, file);
       }))
       .pipe(plugins.concat('lib.css'))
       .pipe(plugins.if(config.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-      .pipe(gulp.dest(config.dirs.build.css))
-      .pipe(cssFilter.restore())
+      .pipe(gulp.dest(bdir(config.dirs.css)));
+
+    gulp.src(allFiles)
       .pipe(assetsFilter)
-      .pipe(gulp.dest(config.dirs.build.bower))
+      .pipe(gulp.dest(bdir(config.dirs.js)))
       .pipe(assetsFilter.restore())
       .pipe(plugins.connect.reload());
   }
