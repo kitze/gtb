@@ -1,25 +1,13 @@
 {
-  "serverPort": 9015,
-  "openAfterLaunch": false,
-  "copyToFolder": "testcopy",
-  "prefix":"..",
+  "serverPort": 9000,
+  "openAfterLaunch": true,
+  "copyToFolder": "copy",
+  "prefix": "..",
   "imagesFolder": "img",
-  "dependencies": [],
+  "ignore":false,
   "additionalBowerFiles": {
-    "js": [
-      {
-        "name": "kitze-helpers",
-        "files": [
-          "js/prototypes.js",
-          "js/helpers.js",
-          "js/conlog.js",
-          "js/tapestryHelpers.js",
-          "js/sweeterAlert.js"
-        ],
-        "ignoreMain": true
-      }
-    ],
+    "js": [],
     "fonts": []
   },
-  "liveReload":true
+  "liveReload": true
 }
