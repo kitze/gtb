@@ -186,4 +186,4 @@ gulp.task('prod', function () {
 });
 
 /* Default task: Builds the app and runs the server without minifying or copying anything to a destination */
-gulp.task('default', ['copy', 'concat', 'watch', 'server']);
+gulp.task('default', ['copy', 'concat', 'server', 'watch']);
