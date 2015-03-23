@@ -128,12 +128,12 @@ addTask('compile', 'sass');
 addTask('concat', 'js');
 addTask('concat', 'css', ['compile:sass']);
 addTask('concat', 'bower');
-addTaskCombination('concat', ['bower', 'js', 'css']);
+addTaskCombination('concat', ['js', 'css']);
 
 /* Copy */
 addTask('copy', 'build');
 addTask('copy', 'font');
-addTask('copy', 'fonts', ['concat:bower']);
+addTask('copy', 'fonts');
 addTask('copy', 'html');
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');
@@ -189,11 +189,6 @@ gulp.task('build:only', function () {
   );
 });
 
-/* Default build */
-gulp.task('build', function () {
-  runSequence('copy', 'concat', 'watch');
-});
-
 /* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
 gulp.task('run:prod', function () {
   isProduction = true;
@@ -206,4 +201,4 @@ gulp.task('run:prod', function () {
 });
 
 /* Deafult task: Builds the app and runs the server without minifying or copying anything to a destination */
-gulp.task('default', ['build', 'server']);
+gulp.task('default', ['concat:bower', 'copy', 'concat', 'watch', 'server']);

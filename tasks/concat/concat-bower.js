@@ -10,7 +10,7 @@ module.exports = function (gulp, plugins, config) {
   var dir = require('../../functions/dir')(config);
   var fs = require('fs');
 
-  var bowerLibraries = [];
+  var allFiles = [];
   var bowerFontTemplates =
       {
         bootstrap: {
@@ -32,11 +32,23 @@ module.exports = function (gulp, plugins, config) {
   }
 
   function getFilesFromBower() {
-    return _(bowerFiles(config.bower).filter(function (file) {
+    var bowerLibraries = _(bowerFiles(config.bower).filter(function (file) {
       return !_.some(config.gulp.additionalBowerFiles.js, function (jsfile) {
         return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
       });
     }));
+
+    /* Get additional files for libraries that are defined in gulp-config.json */
+    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
+    allFiles = _(bowerLibraries).compact().concat(bowerAdditional);
+
+    _.each(allFiles, function (file) {
+      _.each(bowerFontTemplates, function (template) {
+        if (file.indexOf(template.name) !== -1) {
+          config.gulp.additionalBowerFiles.fonts.push(template);
+        }
+      })
+    });
   }
 
   return function () {
@@ -51,7 +63,7 @@ module.exports = function (gulp, plugins, config) {
     try {
       bowerDirectory = fs.lstatSync("./" + config.dirs.prefix + config.dirs.bower);
       if (bowerDirectory.isDirectory()) {
-        bowerLibraries = getFilesFromBower();
+        getFilesFromBower();
       }
     }
     catch (e) {
@@ -61,22 +73,10 @@ module.exports = function (gulp, plugins, config) {
       }
       else {
         /* Executes bower install in a sub-shell before it continues */
-        exec("( cd " + config.dirs.prefix +"&& bower install )");
+        exec("( cd " + config.dirs.prefix + "&& bower install )");
         getFilesFromBower();
       }
     }
-
-    /* Get additional files for libraries that are defined in gulp-config.json */
-    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
-    var allFiles = _(bowerLibraries).compact().concat(bowerAdditional);
-
-    _.each(allFiles, function (file) {
-      _.each(bowerFontTemplates, function (template) {
-        if (file.indexOf(template.name) !== -1) {
-          config.gulp.additionalBowerFiles.fonts.push(template);
-        }
-      })
-    });
 
     gulp.src(allFiles)
       .pipe(jsFilter)
