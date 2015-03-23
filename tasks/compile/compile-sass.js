@@ -1,4 +1,4 @@
-module.exports = function (gulp,plugins,config) {
+module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
 
@@ -10,7 +10,7 @@ module.exports = function (gulp,plugins,config) {
 
     return gulp.src(dir(config.dirs.css + "/application.scss"))
       .pipe(plugins.sass({onError: showError}))
-      .pipe(gulp.dest(config.dirs.prefix + config.dirs.scss + "/" ))
+      .pipe(gulp.dest(config.dirs.prefix + config.dirs.scss + "/"))
       .pipe(plugins.connect.reload());
   }
 };

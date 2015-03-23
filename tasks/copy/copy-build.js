@@ -1,10 +1,12 @@
 module.exports = function (gulp, plugins, config) {
-  var deleteFolderRecursive = require('../../functions/delete-folder-recursive');
   var ncp = require('ncp');
+  var del = require('del');
+  var bdir = require('../../functions/build-dir')(config);
+
   return function () {
     if (config.gulp.copyToFolder) {
-      deleteFolderRecursive(config.gulp.copyToFolder);
-      ncp('build', config.gulp.copyToFolder, function (err) {
+      del.sync(config.gulp.copyToFolder);
+      ncp(bdir(''), config.gulp.copyToFolder, function (err) {
         if (err) {
           return console.error(err);
         }

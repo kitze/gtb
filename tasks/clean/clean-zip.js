@@ -1,6 +1,7 @@
 module.exports = function (gulp, plugins, config) {
-  var cleanFiles = require('../../functions/clean-files');
-  return function (){
-    cleanFiles([config.dirs.prefix+'zip/**/*', config.dirs.prefix+'!zip/build-*.zip'], 'zip');
+  var bdir = require('../../functions/build-dir')(config);
+  var del = require('del');
+  return function () {
+    del(bdir(config.dirs.zip));
   }
 };

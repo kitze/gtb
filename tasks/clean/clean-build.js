@@ -1,8 +1,7 @@
 module.exports = function (gulp, plugins, config) {
-  var deleteFolderRecursive = require('../../functions/delete-folder-recursive');
-  var dir = require('../../functions/dir')(config);
-
+  var bdir = require('../../functions/build-dir')(config);
+  var del = require('del');
   return function () {
-    deleteFolderRecursive(dir(config.dirs.build));
+    del.sync(bdir(''));
   }
 };

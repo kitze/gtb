@@ -113,7 +113,6 @@ function addTaskCombination(name, arr, runBeforeTask) {
 /* ================================= Task List  =========================== */
 
 /* Clean */
-addTask('clean');
 addTask('clean', 'build');
 addTask('clean', 'zip');
 
@@ -136,7 +135,7 @@ addTask('copy', 'html');
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');
 addTask('copy', 'json');
-addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot'], ['concat:bower']);
+addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot'], ['clean:build', 'concat:bower']);
 
 
 /* Run server that will serve index.html and the assets */
@@ -160,10 +159,9 @@ gulp.task('tasks', plugins.taskListing);
 gulp.task('build:copy', function () {
   global.isProduction = true;
   runSequence(
-    'clean:build',
     'copy',
     'concat',
-    'copy-build-to-destination'
+    'copy:build'
   );
 });
 
@@ -171,7 +169,6 @@ gulp.task('build:copy', function () {
 gulp.task('build', function () {
   global.isProduction = true;
   runSequence(
-    'clean:build',
     'copy',
     'concat'
   );
