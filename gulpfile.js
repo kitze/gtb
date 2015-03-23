@@ -1,36 +1,50 @@
-var gulp        = require('gulp'),
-    bowerFiles  = require('main-bower-files'),
-    path        = require('path'),
-    fs          = require('fs'),
-    chalk       = require('chalk'),
-    _           = require('underscore'),
-    args        = require('yargs').argv,
-    map         = require('map-stream'),
-    runSequence = require('run-sequence'),
-    plugins     = require('gulp-load-plugins')(),
-    con         = require('./functions/console'),
-    h = require('./functions/helpers');
+var gulp               = require('gulp'),
+    fs                 = require('fs'),
+    _                  = require('underscore'),
+    args               = require('yargs').argv,
+    runSequence        = require('run-sequence'),
+    plugins            = require('gulp-load-plugins')(),
+    bdir               = require('./functions/build-dir'),
+    historyApiFallback = require('connect-history-api-fallback');
 
+/* Get the default gulp config */
 var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
+
+/* If a custom gulp config doesn't exist generate one so every user can have his custom settings */
 if (!fs.existsSync('custom-gulp-config.json')) {
   fs.writeFileSync('custom-gulp-config.json', fs.readFileSync('custom-gulp-template.json'));
 }
 
+/* Merge the custom gulp config with the default one so every custom setting can be overriden */
 gulpConfig = _.extend(gulpConfig, JSON.parse(fs.readFileSync('custom-gulp-config.json', 'utf8')));
 
+/* If the project is an angular project the dependencies should be specified in the gulp config so if the user wants some of the
+ * dependencies to be ignored just on his machine he can specify that in the gulpConfig.ignoredFiles.dependencies property.
+ */
 var dependencies = _(gulpConfig.dependencies).filter(function (dependency) {
   return isProduction === true || gulpConfig.ignore !== true || gulpConfig.ignoredFiles.dependencies.indexOf(dependency) === -1;
 });
 
+/* In the replacements array you can add any key:value that later will be replaced in every of the html and js files
+ * So for example if your app needs access to the port the app is running on and you have the port define in your gulpfile you can access
+ * it easily from your html/js.
+ */
 var replacements = [
   ["G_SERVER_PORT", gulpConfig.serverPort],
   ["G_DEPENDENCIES", JSON.stringify(dependencies)]
 ];
+
+/* If you add this repository as a submodule of any other app it will live in a folder inside of that app. So that's why the default
+ * prefix is ".." and it's telling the gulp tasks where to look for your files (in this case, one folder backwards).
+ * Another thing you can do is just pull this repository somewhere on your pc and if you want to run any app just add it's full path
+ * to the prefix property, so you can have just one gulp folder on your pc that will run all of your apps.
+ * */
 var prefix = gulpConfig.prefix !== '' ? (gulpConfig.prefix + "/") : '';
-con.log('prefix =============== ' + prefix);
 
+/* Flag that defines if the tasks should be performed in production mode */
+var isProduction = args.type === 'production';
 
-var SETTINGS = {
+var directories = {
   root: '/',
   prefix: prefix,
   app: 'app',
@@ -41,58 +55,55 @@ var SETTINGS = {
   images: gulpConfig.imagesFolder,
   custom: 'custom',
   fonts: 'fonts',
-  json: 'json',
   font: 'font',
+  json: 'json',
   bower: 'bower_components',
   scss: 'scss',
-  zip:'zip'
+  zip: 'zip',
+  tasks: './tasks'
 };
 
-// Flag for generating production code.
-var isProduction = args.type === 'production';
+var settings = {
+  /* Settings for the node server that will serve our index.html and assets */
+  server: {
+    "root": prefix + directories.build,
+    "host": 'localhost',
+    "livereload": gulpConfig.liveReload,  // Tip: disable livereload if you're using older versions of internet explorer because it doesn't work
+    "middleware": function () {
+      return [historyApiFallback];
+    },
+    port: gulpConfig.serverPort
+  },
+  /* Settings for bower */
+  bower: {
+    paths: {
+      "bowerDirectory": prefix + directories.bower,
+      "bowerrc": prefix + '.bowerrc',
+      "bowerJson": prefix + 'bower.json'
+    }
+  }
+};
 
-/*============================================================
- =>                 Load all gulp tasks
- ============================================================*/
-
-var gulpTasksFolder = './tasks';
 function config() {
   return {
     gulp: gulpConfig,
-    dirs: SETTINGS,
+    server: settings.server,
+    bower: settings.bower,
+    dirs: directories,
     isProduction: isProduction,
-    replacements: replacements,
-    server: {
-      root: prefix + SETTINGS.build,
-      host: 'localhost',
-      livereload: gulpConfig.liveReload,
-      middleware: function () {
-        return [function (req, res, next) {
-          if (req.url.indexOf('.') === -1)
-            fs.createReadStream(prefix + SETTINGS.build + "/" + "index.html").pipe(res);
-          return next();
-        }];
-      },
-      port: gulpConfig.serverPort
-    },
-    bower: {
-      paths: {
-        bowerDirectory: prefix + SETTINGS.bower,
-        bowerrc: '.bowerrc',
-        bowerJson: prefix + 'bower.json'
-      }
-    }
+    replacements: replacements
   }
 }
 
 function getTask(task) {
-  return require(gulpTasksFolder + "/" + task)(gulp, plugins, config());
+  return require(directories.tasks + "/" + task)(gulp, plugins, config());
 }
 
-function addTask(folder, task) {
+function addTask(folder, task, runBeforeTask) {
   var taskName = task ? (folder + ":" + task) : folder;
   var taskFolder = "/" + folder + "/" + (task ? (folder + "-" + task) : folder);
-  gulp.task(taskName, getTask(taskFolder));
+  /* if the runBeforeTask variable is defined run those tasks before this one */
+  gulp.task(taskName, runBeforeTask ? runBeforeTask : [], getTask(taskFolder));
 }
 
 function addTaskCombination(name, arr) {
@@ -101,7 +112,7 @@ function addTaskCombination(name, arr) {
   }))
 }
 
-/* ================================= Task List ============================================== */
+/* ================================= Task List  =========================== */
 
 /* Clean */
 addTask('clean');
@@ -114,40 +125,41 @@ addTask('compile', 'jade');
 addTask('compile', 'sass');
 
 /* Concat */
-
-gulp.task('concat:css', ['compile:sass'], getTask('/concat/concat-css'));
 addTask('concat', 'js');
+addTask('concat', 'css', ['compile:sass']);
 addTask('concat', 'bower');
 addTaskCombination('concat', ['bower', 'js', 'css']);
 
 /* Copy */
-
 addTask('copy', 'build');
 addTask('copy', 'font');
-gulp.task('copy:fonts', ['concat:bower'], getTask('/copy/copy-fonts'));
+addTask('copy', 'fonts', ['concat:bower']);
 addTask('copy', 'html');
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');
 addTask('copy', 'json');
 addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot']);
 
-/* Other */
 
+/* Run server that will serve index.html and the assets */
 gulp.task('server', getTask('server'));
+
+/* Minify images */
 gulp.task('image:min', getTask('image-min'));
+
+/* Build the app and put the 'build' folder in a zip file */
 gulp.task('zip', getTask('zip'));
-//gulp.task('hash', getTask('hash'));
+
+/* Watch the directories for changes and reload the page, or if a scss/css file is changed inject it automatically without refreshing */
 gulp.task('watch', getTask('watch'));
-//gulp.task('tasks', plugins.taskListing);
+
+/* Print all the gulp tasks */
+gulp.task('tasks', plugins.taskListing);
 
 /* ================================================================================= */
 
-/**
- * Delete build folder, copy, minify, annotate and hash everything, then copy it to the destination folder
- */
-
+/* Delete build folder, copy, minify, annotate and hash everything, then copy it to the destination folder */
 gulp.task('build:prod', function () {
-  //console.log(hintLog('-------------------------------------------------- BUILD - Full Production Mode'));
   isProduction = true;
   runSequence(
     'delete-build-folder',
@@ -158,11 +170,8 @@ gulp.task('build:prod', function () {
   );
 });
 
-/**
- * Builds the version without hash and delete-build-folder (linux only)
- */
+/* Builds the version without hash and delete-build-folder (linux only) */
 gulp.task('build:windows', function () {
-  //console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode'));
   isProduction = true;
   runSequence(
     'copy',
@@ -171,8 +180,8 @@ gulp.task('build:windows', function () {
   );
 });
 
+/* Just build the project, don't run anything else */
 gulp.task('build:only', function () {
-  //console.log(hintLog('-------------------------------------------------- BUILD - Windows Mode (without copy to destination folder)'));
   isProduction = true;
   runSequence(
     'copy',
@@ -180,19 +189,13 @@ gulp.task('build:only', function () {
   );
 });
 
-/**
- * Builds the app in default mode
- */
+/* Default build */
 gulp.task('build', function () {
-  //console.log(hintLog('-------------------------------------------------- BUILD - Development Mode'));
   runSequence('copy', 'concat', 'watch');
 });
 
-/**
- * Run the minified site in production mode without hashing anything and copying to the destination folder
- */
+/* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
 gulp.task('run:prod', function () {
-  //console.log(hintLog('-------------------------------------------------- RUN - Full Production Mode'));
   isProduction = true;
   runSequence(
     'copy',
@@ -202,8 +205,5 @@ gulp.task('run:prod', function () {
   );
 });
 
-/**
- * Builds the app and runs the server without minifying or copying anything
- */
-
+/* Deafult task: Builds the app and runs the server without minifying or copying anything to a destination */
 gulp.task('default', ['build', 'server']);

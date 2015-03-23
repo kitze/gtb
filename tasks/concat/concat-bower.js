@@ -1,4 +1,6 @@
 module.exports = function (gulp, plugins, config) {
+  require('shelljs/global');
+
   var bowerFiles = require('main-bower-files');
   var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
   var _ = require('underscore');
@@ -6,7 +8,9 @@ module.exports = function (gulp, plugins, config) {
   var path = require('path');
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
+  var fs = require('fs');
 
+  var bowerLibraries = [];
   var bowerFontTemplates =
       {
         bootstrap: {
@@ -27,23 +31,43 @@ module.exports = function (gulp, plugins, config) {
     });
   }
 
+  function getFilesFromBower() {
+    return _(bowerFiles(config.bower).filter(function (file) {
+      return !_.some(config.gulp.additionalBowerFiles.js, function (jsfile) {
+        return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
+      });
+    }));
+  }
+
   return function () {
     var jsFilter = plugins.filter('**/*.js'),
         cssFilter = plugins.filter(['*.css', '**/*.css']),
         assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
 
-    /**
-     * Ignore the files defined in the 'main' property of a bower.json library in case we need to use different files from the library (defined in gulp-config.json)
+    /* Ignore the files defined in the 'main' property of a bower.json library in
+     case we need to use different files from the library (defined in gulp-config.json)
      */
-    var bowerLibraries = _(bowerFiles(config.bower).filter(function (file) {
-      return !_.some(config.gulp.additionalBowerFiles.js, function (jsfile) {
-        return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
-      });
-    }));
 
-    /**
-     * Get additional files for libraries that are defined in gulp-config.json
-     */
+    try {
+      bowerDirectory = fs.lstatSync("./" + config.dirs.prefix + config.dirs.bower);
+      if (bowerDirectory.isDirectory()) {
+        bowerLibraries = getFilesFromBower();
+      }
+    }
+    catch (e) {
+      if (!which('bower')) {
+        echo('Bower is not installed. Please install it with "npm install -g bower" first');
+        exit(-1);
+      }
+      else {
+        cd("./" + config.dirs.prefix);
+        exec("bower install");
+        cd("..");
+        getFilesFromBower();
+      }
+    }
+
+    /* Get additional files for libraries that are defined in gulp-config.json */
     var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
     var allFiles = _(bowerLibraries).compact().concat(bowerAdditional);
 

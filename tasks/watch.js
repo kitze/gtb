@@ -23,7 +23,6 @@ module.exports = function (gulp, plugins, config) {
   };
 
   return function (watch) {
-    console.log('watching all the files.....');
     watchers.concat('css');
     watchers.concat('js');
     watchers.copyAll('images');
