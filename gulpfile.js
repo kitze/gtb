@@ -11,11 +11,11 @@ var gulp               = require('gulp'),
 global.isProduction = false;
 
 /* Get the default gulp config */
-var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
+var gulpConfig = JSON.parse(fs.readFileSync('./config/gulp-config.json', 'utf8'));
 
 /* If a custom gulp config doesn't exist generate one so every user can have his custom settings */
 if (!fs.existsSync('custom-gulp-config.json')) {
-  fs.writeFileSync('custom-gulp-config.json', fs.readFileSync('custom-gulp-template.json'));
+  fs.writeFileSync('custom-gulp-config.json', fs.readFileSync('./config/custom-gulp-template.json'));
 }
 
 /* Merge the custom gulp config with the default one so every custom setting can be overriden */
