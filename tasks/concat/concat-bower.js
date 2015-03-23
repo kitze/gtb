@@ -60,9 +60,8 @@ module.exports = function (gulp, plugins, config) {
         exit(-1);
       }
       else {
-        cd("./" + config.dirs.prefix);
-        exec("bower install");
-        cd("..");
+        /* Executes bower install in a sub-shell before it continues */
+        exec("( cd " + config.dirs.prefix +"&& bower install )");
         getFilesFromBower();
       }
     }
