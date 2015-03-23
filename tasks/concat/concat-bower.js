@@ -82,7 +82,7 @@ module.exports = function (gulp, plugins, config) {
       .pipe(jsFilter)
       .pipe(plugins.plumber())
       .pipe(plugins.concat('lib.js'))
-      .pipe(plugins.if(config.isProduction, plugins.uglify()))
+      .pipe(plugins.if(global.isProduction, plugins.uglify()))
       .pipe(gulp.dest(bdir(config.dirs.js)));
 
     gulp.src(allFiles)
@@ -104,7 +104,7 @@ module.exports = function (gulp, plugins, config) {
         callback(null, file);
       }))
       .pipe(plugins.concat('lib.css'))
-      .pipe(plugins.if(config.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
+      .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
       .pipe(gulp.dest(bdir(config.dirs.css)));
 
     gulp.src(allFiles)

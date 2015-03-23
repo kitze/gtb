@@ -11,7 +11,7 @@ module.exports = function (gulp, plugins, config) {
   };
   return function () {
     gulp.src(dir('*.html'))
-      .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
+      .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
       .pipe(gulp.dest(bdir(config.dirs.root)))
       .pipe(plugins.connect.reload());
   }

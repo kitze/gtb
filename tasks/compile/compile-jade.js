@@ -16,7 +16,7 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.jade({
         pretty: true
       }))
-      .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
+      .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
       .pipe(gulp.dest(bdir(config.dirs[dest])))
       .pipe(plugins.connect.reload());
   }

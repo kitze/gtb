@@ -12,7 +12,7 @@ module.exports = function (gulp, plugins, config) {
 
   return function () {
     gulp.src(fileDir('html', 'templates'))
-      .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
+      .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
       .pipe(gulp.dest(bdir(config.dirs.templates)))
       .pipe(plugins.connect.reload());
   }

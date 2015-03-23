@@ -17,7 +17,7 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.coffee({
         bare: false
       }))
-      .pipe(plugins.if(config.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
+      .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
       .pipe(gulp.dest(bdir(config.dirs.js)))
       .pipe(plugins.connect.reload());
   }

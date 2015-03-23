@@ -7,6 +7,9 @@ var gulp               = require('gulp'),
     bdir               = require('./functions/build-dir'),
     historyApiFallback = require('connect-history-api-fallback');
 
+/* Flag that defines if the tasks should be performed in production mode */
+global.isProduction = false;
+
 /* Get the default gulp config */
 var gulpConfig = JSON.parse(fs.readFileSync('gulp-config.json', 'utf8'));
 
@@ -22,7 +25,7 @@ gulpConfig = _.extend(gulpConfig, JSON.parse(fs.readFileSync('custom-gulp-config
  * dependencies to be ignored just on his machine he can specify that in the gulpConfig.ignoredFiles.dependencies property.
  */
 var dependencies = _(gulpConfig.dependencies).filter(function (dependency) {
-  return isProduction === true || gulpConfig.ignore !== true || gulpConfig.ignoredFiles.dependencies.indexOf(dependency) === -1;
+  return global.isProduction === true || gulpConfig.ignore !== true || gulpConfig.ignoredFiles.dependencies.indexOf(dependency) === -1;
 });
 
 /* In the replacements array you can add any key:value that later will be replaced in every of the html and js files
@@ -40,9 +43,6 @@ var replacements = [
  * to the prefix property, so you can have just one gulp folder on your pc that will run all of your apps.
  * */
 var prefix = gulpConfig.prefix !== '' ? (gulpConfig.prefix + "/") : '';
-
-/* Flag that defines if the tasks should be performed in production mode */
-var isProduction = args.type === 'production';
 
 var directories = {
   root: '/',
@@ -84,19 +84,16 @@ var settings = {
   }
 };
 
-function config() {
-  return {
-    gulp: gulpConfig,
-    server: settings.server,
-    bower: settings.bower,
-    dirs: directories,
-    isProduction: isProduction,
-    replacements: replacements
-  }
-}
+var tasksConfig = {
+  gulp: gulpConfig,
+  server: settings.server,
+  bower: settings.bower,
+  dirs: directories,
+  replacements: replacements
+};
 
 function getTask(task) {
-  return require(directories.tasks + "/" + task)(gulp, plugins, config());
+  return require(directories.tasks + "/" + task)(gulp, plugins, tasksConfig);
 }
 
 function addTask(folder, task, runBeforeTask) {
@@ -106,10 +103,11 @@ function addTask(folder, task, runBeforeTask) {
   gulp.task(taskName, runBeforeTask ? runBeforeTask : [], getTask(taskFolder));
 }
 
-function addTaskCombination(name, arr) {
-  gulp.task(name, _(arr).map(function (m) {
+function addTaskCombination(name, arr, runBeforeTask) {
+  runBeforeTask = runBeforeTask ? runBeforeTask : [];
+  gulp.task(name, runBeforeTask.concat(_(arr).map(function (m) {
     return name + ":" + m
-  }))
+  })));
 }
 
 /* ================================= Task List  =========================== */
@@ -128,7 +126,7 @@ addTask('compile', 'sass');
 addTask('concat', 'js');
 addTask('concat', 'css', ['compile:sass']);
 addTask('concat', 'bower');
-addTaskCombination('concat', ['js', 'css']);
+addTaskCombination('concat', ['bower', 'js', 'css']);
 
 /* Copy */
 addTask('copy', 'build');
@@ -138,7 +136,7 @@ addTask('copy', 'html');
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');
 addTask('copy', 'json');
-addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot']);
+addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot'], ['concat:bower']);
 
 
 /* Run server that will serve index.html and the assets */
@@ -158,22 +156,11 @@ gulp.task('tasks', plugins.taskListing);
 
 /* ================================================================================= */
 
-/* Delete build folder, copy, minify, annotate and hash everything, then copy it to the destination folder */
-gulp.task('build:prod', function () {
-  isProduction = true;
+/* Delete build folder, copy, minify, annotate everything, then copy it to the destination folder */
+gulp.task('build:copy', function () {
+  global.isProduction = true;
   runSequence(
-    'delete-build-folder',
-    'copy',
-    'concat',
-    'hash',
-    'copy-build-to-destination'
-  );
-});
-
-/* Builds the version without hash and delete-build-folder (linux only) */
-gulp.task('build:windows', function () {
-  isProduction = true;
-  runSequence(
+    'clean:build',
     'copy',
     'concat',
     'copy-build-to-destination'
@@ -181,24 +168,25 @@ gulp.task('build:windows', function () {
 });
 
 /* Just build the project, don't run anything else */
-gulp.task('build:only', function () {
-  isProduction = true;
+gulp.task('build', function () {
+  global.isProduction = true;
   runSequence(
+    'clean:build',
     'copy',
     'concat'
   );
 });
 
 /* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
-gulp.task('run:prod', function () {
-  isProduction = true;
+gulp.task('prod', function () {
+  global.isProduction = true;
   runSequence(
     'copy',
     'concat',
-    'watch',
-    'server'
+    'server',
+    'watch'
   );
 });
 
-/* Deafult task: Builds the app and runs the server without minifying or copying anything to a destination */
-gulp.task('default', ['concat:bower', 'copy', 'concat', 'watch', 'server']);
+/* Default task: Builds the app and runs the server without minifying or copying anything to a destination */
+gulp.task('default', ['copy', 'concat', 'watch', 'server']);

@@ -4,14 +4,11 @@ module.exports = function (gulp, plugins, config) {
   return function () {
     if (config.gulp.copyToFolder) {
       deleteFolderRecursive(config.gulp.copyToFolder);
-      //console.log('copying to destination folder');
-      setTimeout(function () {
-        ncp('build', config.gulp.copyToFolder, function (err) {
-          if (err) {
-            return console.error(err);
-          }
-        });
-      }, 12000);
+      ncp('build', config.gulp.copyToFolder, function (err) {
+        if (err) {
+          return console.error(err);
+        }
+      });
     }
   }
 };
