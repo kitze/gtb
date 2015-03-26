@@ -1,0 +1,69 @@
+{
+  "folders": {
+    "name": "app",
+    "folders": [
+      {
+        "name": "css",
+        "folders": [
+          "blocks",
+          "directives",
+          "modals",
+          "pages",
+          "plugins",
+          {
+            "name": "setup",
+            "files": [
+              "colors.scss",
+              "config.scss"
+            ]
+          }
+        ],
+        "files": [
+          "application.scss",
+          "global.scss",
+          "shame.scss"
+        ]
+      },
+      "font",
+      "img",
+      {
+        "name": "js",
+        "folders": [
+          {
+            "name": "controllers",
+            "folders": [
+              "modals",
+              "pages"
+            ]
+          },
+          {
+            "name": "directives",
+            "pages": [
+              "attributes",
+              "elements"
+            ]
+          },
+          "filters",
+          "plugins",
+          "services"
+        ]
+      },
+      "json",
+      {
+        "name": "templates",
+        "folders": [
+          "blocks",
+          "directives",
+          "elements",
+          "modals",
+          "pages"
+        ]
+      }
+    ]
+  },
+  "files": [
+    ".gitignore",
+    "bower.json",
+    ".bowerrc"
+  ]
+}

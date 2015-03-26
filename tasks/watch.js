@@ -32,7 +32,7 @@ module.exports = function (gulp, plugins, config) {
     watchers.custom('copy:htmlroot', 'html', 'root');
     watchers.custom('concat:bower', 'js', 'bower');
     watchedFiles.push(gulp.watch(fileDir(['scss', 'sass'], 'css'), ['concat:css']));
-    watchedFiles.push(gulp.watch(fileDir('jade', ['app', 'templates']), ['compile:jade']));
+    watchedFiles.push(gulp.watch(fileDir('jade', ['', 'templates']), ['compile:jade']));
     watchedFiles.push(gulp.watch(fileDir('coffee', 'js'), ['compile:coffee']));
 
     var onChange = function (event) {
