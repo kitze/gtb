@@ -131,12 +131,11 @@ addTaskCombination('concat', ['bower', 'js', 'css']);
 addTask('copy', 'build');
 addTask('copy', 'font');
 addTask('copy', 'fonts');
-addTask('copy', 'html');
+addTask('copy', 'html', ['compile:jade']);
 addTask('copy', 'htmlroot');
 addTask('copy', 'images');
 addTask('copy', 'json');
 addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot'], ['clean:build', 'concat:bower']);
-
 
 /* Run server that will serve index.html and the assets */
 gulp.task('server', getTask('server'));

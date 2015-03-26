@@ -17,12 +17,12 @@ module.exports = function (gulp, plugins, config) {
         pretty: true
       }))
       .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions)))
-      .pipe(gulp.dest(bdir(config.dirs[dest])))
+      .pipe(gulp.dest(bdir(dest)))
       .pipe(plugins.connect.reload());
   }
 
   return function () {
-    compileDirectory(fileDir('jade', 'templates'), 'templates');
-    compileDirectory(fileDir('jade', 'app', false), 'app');
+    compileDirectory(fileDir('jade', 'templates'), config.dirs.templates); /* compile everything in the templates folder */
+    compileDirectory(fileDir('jade', '', false), ''); /* compile everything in the root folder */
   }
 };
