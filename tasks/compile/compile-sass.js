@@ -17,7 +17,7 @@ module.exports = function (gulp, plugins, config) {
 
     var sassLibraryMapping = {
       "spinkit": "spinkit/scss/spinners",
-      "kitze-helpers": "kitzehelpers/sass"
+      "kitze-helpers": "kitze-helpers/sass"
     };
 
     _(bowerLibraries).each(function (library) {
