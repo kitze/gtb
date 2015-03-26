@@ -9,6 +9,7 @@ module.exports = function (gulp, plugins, config) {
     gulp.src(str)
       .pipe(plugins.concat('app.css'))
       .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
+      .pipe(plugins.autoprefixer())
       .pipe(gulp.dest(bdir(config.dirs.css)))
       .pipe(plugins.connect.reload());
   }

@@ -1,7 +1,9 @@
 {
   "name": "app",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "gulp-autoprefixer": "^2.1.0"
+  },
   "devDependencies": {
     "browser-sync": "0.5.7",
     "chalk": "0.4.0",
