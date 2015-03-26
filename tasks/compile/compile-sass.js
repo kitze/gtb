@@ -9,7 +9,7 @@ module.exports = function (gulp, plugins, config) {
     };
 
     return gulp.src(dir(config.dirs.css + "/application.scss"))
-      .pipe(plugins.sass({onError: showError}))
+      .pipe(plugins.sass({onError: showError, includePaths : [(config.dirs.prefix + config.dirs.bower + "/")]}))
       .pipe(gulp.dest(config.dirs.prefix + config.dirs.scss + "/"))
       .pipe(plugins.connect.reload());
   }
