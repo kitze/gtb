@@ -7,7 +7,7 @@ module.exports = function (gulp, plugins, config) {
     var str = [dir(config.dirs.css + '/fonts.css'), config.dirs.prefix + config.dirs.scss + '/application.css'].concat(fileDir("css", "css"));
 
     gulp.src(str)
-      .pipe(plugins.concat('styles.css'))
+      .pipe(plugins.concat('app.css'))
       .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
       .pipe(gulp.dest(bdir(config.dirs.css)))
       .pipe(plugins.connect.reload());
