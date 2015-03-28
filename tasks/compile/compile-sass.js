@@ -14,10 +14,10 @@ module.exports = function (gulp, plugins, config) {
     var includePaths = [bowerComponentsPath];
     var bowerLibraries = bowerFiles(config.bower);
 
-
     var sassLibraryMapping = {
       "spinkit": "spinkit/scss/spinners",
-      "kitze-helpers": "kitze-helpers/sass"
+      "kitze-helpers": "kitze-helpers/sass",
+      "bem-constructor": "bem-constructor/dist"
     };
 
     _(bowerLibraries).each(function (library) {
