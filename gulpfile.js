@@ -92,15 +92,16 @@ var tasksConfig = {
   replacements: replacements
 };
 
-function getTask(task) {
-  return require(directories.tasks + "/" + task)(gulp, plugins, tasksConfig);
-}
+/* ================================= Task Loader Functions  =========================== */
 
+/* Each of the tasks that are in a separate file needs access to
+ * the variables "gulp", "plugins" and "tasksConfig", so when a tasks is required
+ * those 3 are supplied as arguments
+ * */
 function addTask(folder, task, runBeforeTask) {
   var taskName = task ? (folder + ":" + task) : folder;
-  var taskFolder = "/" + folder + "/" + (task ? (folder + "-" + task) : folder);
-  /* if the runBeforeTask variable is defined run those tasks before this one */
-  gulp.task(taskName, runBeforeTask ? runBeforeTask : [], getTask(taskFolder));
+  var taskFolder = "/" + folder + (task ? "/" : '') + (task ? (folder + "-" + task) : (task ? folder : ''));
+  gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require(directories.tasks + "/" + taskFolder)(gulp, plugins, tasksConfig));
 }
 
 function addTaskCombination(name, arr, runBeforeTask) {
@@ -133,56 +134,33 @@ addTask('copy', 'font');
 addTask('copy', 'fonts');
 addTask('copy', 'html', ['compile:jade']);
 addTask('copy', 'htmlroot');
-addTask('copy', 'images');
+addTask('copy', 'images', ['imagemin']);
 addTask('copy', 'json');
 addTaskCombination('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot'], ['clean:build', 'concat:bower']);
 
 /* Run server that will serve index.html and the assets */
-gulp.task('server', getTask('server'));
+addTask('server');
 
 /* Minify images */
-gulp.task('image:min', getTask('image-min'));
+addTask('imagemin');
 
 /* Build the app and put the 'build' folder in a zip file */
-gulp.task('zip', getTask('zip'));
+addTask('zip');
 
 /* Watch the directories for changes and reload the page, or if a scss/css file is changed inject it automatically without refreshing */
-gulp.task('watch', getTask('watch'));
+addTask('watch');
+
+/* Delete build folder, copy, minify, annotate everything, then copy it to the destination folder */
+addTask('build', 'copy');
+
+/* Just build the project, don't run anything else */
+addTask('build', 'only');
+
+/* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
+addTask('build', 'prod');
 
 /* Print all the gulp tasks */
 gulp.task('tasks', plugins.taskListing);
-
-/* ================================================================================= */
-
-/* Delete build folder, copy, minify, annotate everything, then copy it to the destination folder */
-gulp.task('build:copy', function () {
-  global.isProduction = true;
-  runSequence(
-    'copy',
-    'concat',
-    'copy:build'
-  );
-});
-
-/* Just build the project, don't run anything else */
-gulp.task('build', function () {
-  global.isProduction = true;
-  runSequence(
-    'copy',
-    'concat'
-  );
-});
-
-/* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
-gulp.task('prod', function () {
-  global.isProduction = true;
-  runSequence(
-    'copy',
-    'concat',
-    'server',
-    'watch'
-  );
-});
 
 /* Default task: Builds the app and runs the server without minifying or copying anything to a destination */
 gulp.task('default', ['copy', 'concat', 'server', 'watch']);

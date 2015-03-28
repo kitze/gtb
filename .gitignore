@@ -1,6 +1,7 @@
 app/
 build/
 node_modules/
-/copy/
+copy/
 .idea
 custom-gulp-config.json
+path.json

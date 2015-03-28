@@ -2,7 +2,8 @@
   "name": "app",
   "version": "0.0.0",
   "dependencies": {
-    "gulp-autoprefixer": "^2.1.0"
+    "gulp-autoprefixer": "^2.1.0",
+    "imagemin-pngquant": "^4.0.0"
   },
   "devDependencies": {
     "browser-sync": "0.5.7",
