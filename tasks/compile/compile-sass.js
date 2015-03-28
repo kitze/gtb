@@ -3,6 +3,7 @@ module.exports = function (gulp, plugins, config) {
   var dir = require('../../functions/dir')(config);
   var bowerFiles = require('main-bower-files');
   var _ = require('underscore');
+  var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
 
   return function () {
     var showError = function (err) {
@@ -13,6 +14,8 @@ module.exports = function (gulp, plugins, config) {
     var bowerComponentsPath = config.dirs.prefix + config.dirs.bower + "/";
     var includePaths = [bowerComponentsPath];
     var bowerLibraries = bowerFiles(config.bower);
+    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
+    var allBowerFiles = _(bowerLibraries).compact().concat(bowerAdditional);
 
     var sassLibraryMapping = {
       "spinkit": "spinkit/scss/spinners",
@@ -20,7 +23,7 @@ module.exports = function (gulp, plugins, config) {
       "bem-constructor": "bem-constructor/dist"
     };
 
-    _(bowerLibraries).each(function (library) {
+    _(allBowerFiles).each(function (library) {
       _(sassLibraryMapping).each(function (lib, libKey) {
         if (library.indexOf(libKey) !== -1) {
           includePaths.push(bowerComponentsPath + lib);
