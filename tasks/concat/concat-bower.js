@@ -72,6 +72,7 @@ module.exports = function (gulp, plugins, config) {
         exit(-1);
       }
       else {
+        exec("mkdir " + config.dirs.bower);
         /* Executes bower install in a sub-shell before it continues */
         exec("( cd " + config.dirs.prefix + "&& bower install )");
         getFilesFromBower();
