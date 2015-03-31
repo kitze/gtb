@@ -153,8 +153,11 @@ addTask('watch');
 /* Delete build folder, copy, minify, annotate everything, then copy it to the destination folder */
 addTask('build', 'copy');
 
-/* Just build the project, don't run anything else */
+/* Just build the project in production mode, don't run anything else */
 addTask('build', 'only');
+
+/* Just build the project in normal non-production mode, don't run anything else */
+addTask('build', 'normal');
 
 /* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
 addTask('build', 'prod');
