@@ -9,7 +9,6 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
   var fs = require('extfs');
-  var bower = require('bower');
 
   var allFiles = [];
   var bowerFontTemplates =
