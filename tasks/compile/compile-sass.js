@@ -5,10 +5,15 @@ module.exports = function (gulp, plugins, config) {
   var fileDir = require("../../functions/file-dir")(config);
   var _ = require('underscore');
   var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
+  var notifier = require('gulp-notify/node_modules/node-notifier');
 
   return function () {
     var showError = function (err) {
-      console.log('\n SASS file has error clear it to see changes, see below log ------------->>> \n');
+      notifier.notify({
+        'title': 'SASS error',
+        'message': err
+      });
+      console.log('\n SASS file has error ------------->>> \n');
       console.log(err);
     };
 
