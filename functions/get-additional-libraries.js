@@ -1,18 +1,23 @@
 module.exports = function (gulp, plugins, config) {
   var _ = require('underscore');
-  var dir = require('../functions/dir')(config);
 
-  return function(obj) {
+  return function (obj, libType) {
     var libs = [];
-    _.each(obj, function (library) {
-      _.each(library.files, function (file) {
-        if (global.isProduction === false && config.gulp.ignore !== true || config.gulp.ignoredFiles.js.indexOf(library.name) === -1) {
-          libs.push(config.dirs.prefix+config.dirs.bower + "/" + library.name + "/" + file);
-        }
-        else {
-          console.log(library.name + " ignored");
-        }
-      });
+    var libsToSearch = libType === "sass" ? obj.sass.concat(obj.js) : obj.js;
+    _.each(libsToSearch, function (library) {
+      if (libType === "sass") {
+        libs.push(global.prefix + config.dirs.bower + "/" + library.name);
+      }
+      else {
+        _.each(library.files, function (file) {
+          if (global.isProduction === false && config.gulp.ignore !== true || config.gulp.ignoredFiles.js.indexOf(library.name) === -1) {
+            libs.push(global.prefix + config.dirs.bower + "/" + library.name + "/" + file);
+          }
+          else {
+            console.log(library.name + "is ignored");
+          }
+        });
+      }
     });
     return libs;
   }

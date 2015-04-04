@@ -2,6 +2,7 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
   var bowerFiles = require('main-bower-files');
+  var fileDir = require("../../functions/file-dir")(config);
   var _ = require('underscore');
   var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
 
@@ -11,10 +12,18 @@ module.exports = function (gulp, plugins, config) {
       console.log(err);
     };
 
-    var bowerComponentsPath = config.dirs.prefix + config.dirs.bower + "/";
+    var bowerComponentsPath = global.prefix + config.dirs.bower + "/";
     var includePaths = [bowerComponentsPath];
-    var bowerLibraries = bowerFiles(config.bower);
-    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
+
+    var bowerSettings = {
+      paths: {
+        "bowerJson": global.prefix + 'bower.json',
+        "bowerDirectory": global.prefix + config.dirs.bower
+      }
+    };
+
+    var bowerLibraries = bowerFiles(bowerSettings);
+    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles, "sass");
     var allBowerFiles = _(bowerLibraries).compact().concat(bowerAdditional);
 
     var sassLibraryMapping = {
@@ -31,9 +40,13 @@ module.exports = function (gulp, plugins, config) {
       })
     });
 
-    return gulp.src(dir(config.dirs.css + "/application.scss"))
+    gulp.src(dir(config.dirs.css + "/application.scss"))
       .pipe(plugins.sass({onError: showError, includePaths: includePaths}))
-      .pipe(gulp.dest(config.dirs.prefix + config.dirs.scss + "/"))
+      .pipe(plugins.addSrc(fileDir("css", "css")))
+      .pipe(plugins.concat('app.css'))
+      .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
+      .pipe(plugins.autoprefixer({browsers: ['last 2 version']}))
+      .pipe(gulp.dest(bdir(config.dirs.css)))
       .pipe(plugins.connect.reload());
   }
 };

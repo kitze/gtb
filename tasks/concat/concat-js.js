@@ -8,7 +8,9 @@ module.exports = function (gulp, plugins, config) {
   return function () {
     var js = gulp.src([jsDir + 'plugins/*.js', jsDir + 'app.js'].concat(fileDir("js", "js"))).pipe(plugins.concat('app.js'));
 
-    _(config.replacements).each(function (replacement) {js = js.pipe(plugins.replace(replacement[0], replacement[1]))});
+    _(config.replacements).each(function (replacement) {
+      js = js.pipe(plugins.replace(replacement[0], replacement[1]))
+    });
     js.pipe(plugins.if(global.isProduction, plugins.ngAnnotate()))
       .pipe(plugins.if(global.isProduction, plugins.uglify()))
       .pipe(gulp.dest(bdir(config.dirs.js)))

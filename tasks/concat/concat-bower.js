@@ -8,7 +8,8 @@ module.exports = function (gulp, plugins, config) {
   var path = require('path');
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
-  var fs = require('fs');
+  var fs = require('extfs');
+  var bower = require('bower');
 
   var allFiles = [];
   var bowerFontTemplates =
@@ -31,15 +32,25 @@ module.exports = function (gulp, plugins, config) {
     });
   }
 
+  var bowerDirectoryPath = global.prefix + config.dirs.bower;
+
+  var bowerSettings = {
+    paths: {
+      "bowerJson": global.prefix + 'bower.json',
+      "bowerDirectory": bowerDirectoryPath
+    }
+  };
+
   function getFilesFromBower() {
-    var bowerLibraries = _(bowerFiles(config.bower).filter(function (file) {
-      return !_.some(config.gulp.additionalBowerFiles.js, function (jsfile) {
-        return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
-      });
-    }));
+    var bowerLibraries = _(bowerFiles(bowerSettings).filter(function (file) {
+        return !_.some(config.gulp.additionalBowerFiles.js, function (jsfile) {
+          return jsfile.ignoreMain === true && file.indexOf(jsfile.name) !== -1;
+        });
+      })
+    );
 
     /* Get additional files for libraries that are defined in gulp-config.json */
-    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles.js);
+    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles, "js");
     allFiles = _(bowerLibraries).compact().concat(bowerAdditional);
 
     _.each(allFiles, function (file) {
@@ -52,31 +63,54 @@ module.exports = function (gulp, plugins, config) {
   }
 
   return function () {
-    var jsFilter = plugins.filter('**/*.js'),
-        cssFilter = plugins.filter(['*.css', '**/*.css']),
+    var jsFilter     = plugins.filter('**/*.js'),
+        cssFilter    = plugins.filter(['*.css', '**/*.css']),
         assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
 
     /* Ignore the files defined in the 'main' property of a bower.json library in
      case we need to use different files from the library (defined in gulp-config.json)
      */
 
+    if (!which('bower')) {
+      echo('Bower is not installed. Please install it with "npm install -g bower" first');
+      exit(-1);
+    }
+
     try {
-      bowerDirectory = fs.lstatSync("./" + config.dirs.prefix + config.dirs.bower);
-      if (bowerDirectory.isDirectory()) {
-        getFilesFromBower();
+      var bowerDirectory = fs.lstatSync(bowerDirectoryPath);
+      var foldersInsideBowerDirectory = fs.getDirsSync(bowerDirectoryPath).length;
+      var bowerFile = JSON.parse(fs.readFileSync(global.prefix + "bower.json", 'utf8'));
+      var bowerDependenciesNumber = Object.keys(bowerFile.dependencies).length + (bowerFile.devDependencies !== undefined ? Object.keys(bowerFile.devDependencies).length : 0);
+      /* if bower_components exists */
+      if (bowerDirectory.isDirectory() === true) {
+        console.log("bower_components exists");
+        /* if there are no folders in bower_components run bower install */
+        if (fs.isEmptySync(bowerDirectoryPath) === true) {
+          console.log('bower_components is empty');
+          installBowerComponents();
+        }
+        /* if some folders are missing from bower_components run bower install */
+        else if (foldersInsideBowerDirectory < bowerDependenciesNumber) {
+          console.log('the bower_components folder doesn\'t match the bower.json file', foldersInsideBowerDirectory, bowerDependenciesNumber);
+          installBowerComponents();
+        }
+        else {
+          console.log('bower_components is ok');
+          getFilesFromBower();
+        }
       }
     }
     catch (e) {
-      if (!which('bower')) {
-        echo('Bower is not installed. Please install it with "npm install -g bower" first');
-        exit(-1);
-      }
-      else {
-        exec("mkdir " + config.dirs.bower);
-        /* Executes bower install in a sub-shell before it continues */
-        exec("( cd " + config.dirs.prefix + "&& bower install )");
-        getFilesFromBower();
-      }
+      console.log('bower_components directory doesn\'t exist, creating it');
+      fs.mkdirSync(bowerDirectoryPath);
+      /* Executes bower install in a sub-shell before it continues */
+      installBowerComponents();
+    }
+
+    function installBowerComponents() {
+      console.log('executing bower install');
+      exec("( cd " + global.prefix + "; bower install )");
+      getFilesFromBower();
     }
 
     gulp.src(allFiles)
@@ -93,7 +127,7 @@ module.exports = function (gulp, plugins, config) {
         var contents = file.contents.toString().replace(/url\([^)]*\)/g, function (match) {
           // find the url path, ignore quotes in url string
           var matches = /url\s*\(\s*(('([^']*)')|("([^"]*)")|([^'"]*))\s*\)/.exec(match),
-              url = matches[3] || matches[5] || matches[6];
+              url     = matches[3] || matches[5] || matches[6];
           // Don't modify data, http(s) and protocol agnostic urls
           if (/^data:/.test(url) || /^http(:?s)?:/.test(url) || /^\/\//.test(url) || keepOriginal(url))
             return 'url(' + url + ')';
@@ -114,4 +148,5 @@ module.exports = function (gulp, plugins, config) {
       .pipe(assetsFilter.restore())
       .pipe(plugins.connect.reload());
   }
-};
+}
+;

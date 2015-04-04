@@ -7,7 +7,7 @@ module.exports = function (gulp, plugins, config) {
   return function () {
     /* join the fonts from the fonts folder with those listed in additionalBowerFiles */
     var allFonts = fileDir('*', 'fonts').concat(_.map(config.gulp.additionalBowerFiles.fonts, function (fontLibrary) {
-      return config.dirs.prefix + config.dirs.bower + "/" + fontLibrary.name + "/" + fontLibrary.directory + "/" + "*";
+      return global.prefix + config.dirs.bower + "/" + fontLibrary.name + "/" + fontLibrary.directory + "/" + "*";
     }));
 
     gulp.src(allFonts)

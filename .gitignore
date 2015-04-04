@@ -2,4 +2,5 @@ app/
 node_modules/
 .idea
 custom-gulp-config.json
-path.json
+projects.json
+npm-debug.log

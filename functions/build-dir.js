@@ -1,5 +1,5 @@
 module.exports = function (config) {
   return function (folder){
-    return config.dirs.prefix + config.dirs.build + "/" + folder;
+    return global.prefix + config.dirs.build + "/" + folder;
   }
 };

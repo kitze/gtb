@@ -23,7 +23,6 @@ module.exports = function (gulp, plugins, config) {
   };
 
   return function (watch) {
-    watchers.concat('css');
     watchers.concat('js');
     watchers.copyAll('images');
     watchers.copyAll('fonts');
@@ -31,7 +30,7 @@ module.exports = function (gulp, plugins, config) {
     watchers.copy('html', 'templates');
     watchers.custom('copy:htmlroot', 'html', 'root');
     watchers.custom('concat:bower', 'js', 'bower');
-    watchedFiles.push(gulp.watch(fileDir(['scss', 'sass'], 'css'), ['concat:css']));
+    watchedFiles.push(gulp.watch(fileDir(['scss', 'sass'], 'css').concat(fileDir(['css'])), ['compile:sass']));
     watchedFiles.push(gulp.watch(fileDir('jade', ['', 'templates']), ['compile:jade']));
     watchedFiles.push(gulp.watch(fileDir('coffee', 'js'), ['compile:coffee']));
 
