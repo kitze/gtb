@@ -108,7 +108,7 @@ module.exports = function (gulp, plugins, config) {
 
     function installBowerComponents() {
       console.log('executing bower install');
-      exec("( cd " + global.prefix + "; bower install )");
+      exec("( cd " + global.prefix + "; bower prune; bower install )");
       getFilesFromBower();
     }
 

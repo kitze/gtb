@@ -1,5 +1,6 @@
 module.exports = function (gulp, plugins, config) {
   var fileDir = require('../functions/file-dir')(config);
+  var dir = require('../functions/dir')(config);
   var runSequence = require('run-sequence');
   var watchedFiles = [];
 
@@ -22,7 +23,14 @@ module.exports = function (gulp, plugins, config) {
     }
   };
 
-  return function (watch) {
+  function waitAndClean() {
+    runSequence('clean:build');
+    setTimeout(function () {
+      runSequence('copy', 'concat', 'watch');
+    }, 500);
+  }
+
+  return function () {
     watchers.concat('js');
     watchers.copyAll('images');
     watchers.copyAll('fonts');
@@ -34,18 +42,33 @@ module.exports = function (gulp, plugins, config) {
     watchedFiles.push(gulp.watch(fileDir('jade', ['', 'templates']), ['compile:jade']));
     watchedFiles.push(gulp.watch(fileDir('coffee', 'js'), ['compile:coffee']));
 
+    /* If each of the files is deleted, delete the build directory and run tasks again */
     var onChange = function (event) {
       if (event.type === 'deleted') {
-        runSequence('clean');
-        setTimeout(function () {
-          runSequence('copy', 'concat', 'watch');
-        }, 500);
+        waitAndClean();
       }
-      console.log('-------------------------------------------------->>>> File ' + event.path + ' was ------->>>> ' + event.type);
+      console.log('-------------------->>>> File ' + event.path + ' was ------->>>> ' + event.type);
     };
 
     watchedFiles.forEach(function (watchedFile) {
       watchedFile.on('change', onChange);
     });
+
+    var bowerFileDirectory = global.prefix + "bower.json";
+    gulp.watch(bowerFileDirectory)
+      .on('change', function (event) {
+        if (event.type === "changed") {
+          console.log('----------------->>>>  bower.json changed, executing bower prune & install!');
+          exec("( cd " + global.prefix + "; bower prune; bower install )");
+          runSequence('copy', 'concat', 'watch');
+          notifier.notify({
+            "title": "bower.json changed!",
+            'message': "Bower components were updated accordingly."
+          });
+        }
+      }
+    )
+    ;
   }
-};
+}
+;
