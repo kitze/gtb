@@ -2,6 +2,7 @@ module.exports = function (gulp, plugins, config) {
   var fileDir = require('../functions/file-dir')(config);
   var dir = require('../functions/dir')(config);
   var runSequence = require('run-sequence');
+  var notifier = require('gulp-notify/node_modules/node-notifier');
   var watchedFiles = [];
 
   function addWatcher(task, type, directory) {
