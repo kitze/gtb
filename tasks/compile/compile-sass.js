@@ -46,6 +46,9 @@ module.exports = function (gulp, plugins, config) {
     });
 
     gulp.src(dir(config.dirs.css + "/application.scss"))
+      .pipe(plugins.cssGlobbing({
+        extensions: ['.css', '.scss']
+      }))
       .pipe(plugins.sass({onError: showError, includePaths: includePaths}))
       .pipe(plugins.addSrc(fileDir("css", "css")))
       .pipe(plugins.concat('app.css'))
