@@ -48,7 +48,7 @@ module.exports = function (gulp, plugins, config) {
       if (event.type === 'deleted') {
         waitAndClean();
       }
-      console.log('-------------------->>>> File ' + event.path + ' was ------->>>> ' + event.type);
+      console.log('File ' + event.path + ' was ---->> ' + event.type);
     };
 
     watchedFiles.forEach(function (watchedFile) {
@@ -59,7 +59,7 @@ module.exports = function (gulp, plugins, config) {
     gulp.watch(bowerFileDirectory)
       .on('change', function (event) {
         if (event.type === "changed") {
-          console.log('----------------->>>>  bower.json changed, executing bower prune & install!');
+          console.log('-------->>>>  bower.json changed, executing bower prune & install!');
           exec("( cd " + global.prefix + "; bower prune; bower install )");
           runSequence('copy', 'concat', 'watch');
           notifier.notify({
