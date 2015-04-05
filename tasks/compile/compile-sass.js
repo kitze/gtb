@@ -11,7 +11,7 @@ module.exports = function (gulp, plugins, config) {
     var showError = function (err) {
       notifier.notify({
         'title': 'SASS error',
-        'message': err
+        'message': err,
       });
       console.log('\n SASS file has error ------------->>> \n');
       console.log(err);
