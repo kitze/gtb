@@ -1,3 +1,6 @@
+/* global shell */
+require('shelljs/global');
+/* dependencies */
 var gulp               = require('gulp'),
     fs                 = require('fs'),
     _                  = require('underscore'),
@@ -9,20 +12,6 @@ var gulp               = require('gulp'),
     inq                = require('inquirer'),
     os                 = require('os'),
     figlet             = require('figlet');
-
-require('shelljs/global');
-
-figlet('WELCOME', function (err, data) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log(data)
-});
-
-/* Flag that defines if the tasks should be performed in production mode */
-global.isProduction = false;
-global.currentProject = undefined;
 
 /* If you add this repository as a submodule of any other app it will live in a folder inside of that app. So that's why the default
  * prefix is ".." and it's telling the gulp tasks where to look for your files (in this case, one folder backwards).
@@ -429,24 +418,39 @@ function wait(fn) {
   }, 500);
 }
 
-/* Runs project with name */
-gulp.task('run', function () {
-  wait(function () {
-    if (args.n === undefined) {
-      console.log('If you want you can directly specify a project name with the -n parameter!');
-      listProjects();
+function welcome(){
+  global.isProduction = false;
+  global.currentProject = undefined;
+  figlet('WELCOME', function (err, data) {
+    if (err) {
+      console.log(err);
+      return;
     }
-    else {
-      readProjects();
-    }
+    console.log(data)
   });
-});
+}
 
-/* Lists all projects */
-gulp.task('projects', function () {
-  wait(listProjects);
-});
+console.log('lool');
 
-gulp.task('default', function () {
-  wait(listOptions);
-});
+module.exports = function () {
+  return {
+    run: function () {
+      welcome();
+      wait(function () {
+        if (args.n === undefined) {
+          console.log('If you want you can directly specify a project name with the -n parameter!');
+          listProjects();
+        }
+        else {
+          readProjects();
+        }
+      });
+    },
+    projects: function () {
+      wait(listProjects);
+    },
+    default: function () {
+      wait(listOptions);
+    }
+  }
+};
