@@ -28,8 +28,8 @@ module.exports = function (gulp, plugins, config) {
     };
 
     var bowerLibraries = bowerFiles(bowerSettings);
-    var bowerAdditional = getAdditionalLibraries(config.gulp.additionalBowerFiles, "sass");
-    var allBowerFiles = _(bowerLibraries).compact().concat(bowerAdditional);
+    var additionalBowerSassFiles = getAdditionalLibraries(config.gulp.additionalBowerFiles, "sass");
+    var allBowerFiles = _(bowerLibraries).compact().concat(additionalBowerSassFiles);
 
     var sassLibraryMapping = {
       "spinkit": "spinkit/scss/spinners",
@@ -44,6 +44,7 @@ module.exports = function (gulp, plugins, config) {
         }
       })
     });
+    var adds = getAdditionalLibraries(config.gulp.additionalBowerFiles, "css");
 
     gulp.src(dir(config.dirs.css + "/application.scss"))
       .pipe(plugins.cssGlobbing({
@@ -51,6 +52,7 @@ module.exports = function (gulp, plugins, config) {
       }))
       .pipe(plugins.sass({onError: showError, includePaths: includePaths}))
       .pipe(plugins.addSrc(fileDir("css", "css")))
+      .pipe(plugins.addSrc(adds))
       .pipe(plugins.concat('app.css'))
       .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
       .pipe(plugins.autoprefixer({browsers: ['last 2 version']}))
