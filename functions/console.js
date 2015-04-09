@@ -1,17 +1,20 @@
 var chalk = require('chalk');
-var log = function (a, b) {
-  if (b) {
-    console.log(a, b);
-    return;
-  }
-  console.log(a);
+var moment = require('moment');
+
+function timestamp(){
+  return "[" + chalk.gray.bold(new moment().format("HH:mm:ss")) + "] ";
+}
+
+var log = function (toLog) {
+  console.log(timestamp() + arguments[0]);
 };
+
 module.exports = {
   log: log,
-  err: function (a, b) {
-    log(chalk.red.bold(a), b)
+  err: function () {
+    log.apply(chalk.red.bold.apply(this, arguments))
   },
-  hint: function (a, b) {
-    log(chalk.blue.bold(a), b);
+  hint: function () {
+    log(chalk.green.bold.apply(this, arguments));
   }
 };

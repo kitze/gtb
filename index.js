@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 /* global shell */
 require('shelljs/global');
 /* dependencies */
@@ -11,7 +12,11 @@ var gulp               = require('gulp'),
     historyApiFallback = require('connect-history-api-fallback'),
     inq                = require('inquirer'),
     os                 = require('os'),
-    figlet             = require('figlet');
+    chalk              = require('chalk'),
+    figlet             = require('figlet'),
+    con                = require('./functions/console');
+
+console.log('arguments are', args);
 
 /* If you add this repository as a submodule of any other app it will live in a folder inside of that app. So that's why the default
  * prefix is ".." and it's telling the gulp tasks where to look for your files (in this case, one folder backwards).
@@ -199,7 +204,7 @@ function readProjects() {
 }
 
 function runProject(project) {
-  console.log('Running project "' + project.name + '"...');
+  con.hint('Running project "' + project.name + '"...');
   global.prefix = project.location;
   addAllTasks();
   runSequence('default');
@@ -418,39 +423,48 @@ function wait(fn) {
   }, 500);
 }
 
-function welcome(){
+function welcome() {
   global.isProduction = false;
   global.currentProject = undefined;
-  figlet('WELCOME', function (err, data) {
+  figlet('GTB', function (err, data) {
     if (err) {
       console.log(err);
       return;
     }
-    console.log(data)
+    console.log(data);
+    console.log(chalk.bold.green('--> Made by Kitze <--'));
   });
 }
 
-console.log('lool');
+con.log('Running...');
+con.log([1, 2, 3]);
 
-module.exports = function () {
-  return {
-    run: function () {
-      welcome();
-      wait(function () {
-        if (args.n === undefined) {
-          console.log('If you want you can directly specify a project name with the -n parameter!');
-          listProjects();
-        }
-        else {
-          readProjects();
-        }
-      });
-    },
-    projects: function () {
-      wait(listProjects);
-    },
-    default: function () {
-      wait(listOptions);
-    }
+var gtbMethods = {
+  run: function () {
+    welcome();
+    wait(function () {
+      if (args.n === undefined) {
+        console.log('If you want you can directly specify a project name with the -n parameter!');
+        listProjects();
+      }
+      else {
+        readProjects();
+      }
+    });
+  },
+  projects: function () {
+    listProjects();
+  },
+  default: function () {
+    listOptions();
   }
+};
+if (gtbMethods[args._[0]]) {
+  gtbMethods[args._[0]]();
+}
+else {
+  listOptions();
+}
+module.exports = function () {
+  return gtbMethods;
 };

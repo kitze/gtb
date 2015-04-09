@@ -10,6 +10,7 @@ module.exports = function (gulp, plugins, config) {
   var dir = require('../../functions/dir')(config);
   var fs = require('extfs');
   var notifier = require('gulp-notify/node_modules/node-notifier');
+  var con = require('../../functions/console');
 
   var allFiles = [];
   var bowerFontTemplates =
@@ -72,7 +73,7 @@ module.exports = function (gulp, plugins, config) {
      */
 
     if (!which('bower')) {
-      echo('Bower is not installed. Please install it with "npm install -g bower" first');
+      con.err('Bower is not installed. Please install it with "npm install -g bower" first');
       exit(-1);
     }
 
@@ -83,25 +84,25 @@ module.exports = function (gulp, plugins, config) {
       var bowerDependenciesNumber = Object.keys(bowerFile.dependencies).length + (bowerFile.devDependencies !== undefined ? Object.keys(bowerFile.devDependencies).length : 0);
       /* if bower_components exists */
       if (bowerDirectory.isDirectory() === true) {
-        console.log("bower_components exists");
+        con.hint("Bower directory exists");
         /* if there are no folders in bower_components run bower install */
         if (fs.isEmptySync(bowerDirectoryPath) === true) {
-          console.log('bower_components is empty');
+          con.err('Bower directory is empty!');
           installBowerComponents();
         }
         /* if some folders are missing from bower_components run bower install */
         else if (foldersInsideBowerDirectory < bowerDependenciesNumber) {
-          console.log('the bower_components folder doesn\'t match the bower.json file', foldersInsideBowerDirectory, bowerDependenciesNumber);
+          con.err('the bower_components folder doesn\'t match the bower.json file', foldersInsideBowerDirectory, bowerDependenciesNumber);
           installBowerComponents();
         }
         else {
-          console.log('bower_components is ok');
+          con.hint('Bower directory is ok');
           getFilesFromBower();
         }
       }
     }
     catch (e) {
-      console.log('bower_components directory doesn\'t exist, creating it');
+      con.hint('bower_components directory doesn\'t exist, creating it');
       fs.mkdirSync(bowerDirectoryPath);
       /* Executes bower install in a sub-shell before it continues */
       installBowerComponents();

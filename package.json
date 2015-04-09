@@ -1,12 +1,13 @@
 {
-  "name": "app",
-  "version": "0.0.0",
+  "name": "gtb",
+  "version": "0.1.0",
   "dependencies": {
     "gulp-autoprefixer": "^2.1.0",
     "gulp-rename": "^1.2.2",
     "imagemin-pngquant": "^4.0.0",
     "inquirer": "^0.8.2",
     "json-file-plus": "^2.0.0",
+    "moment": "^2.10.2",
     "prompt": "^0.2.14",
     "sync-prompt": "^0.4.2",
     "yargs": "^3.6.0"
@@ -63,7 +64,28 @@
     "node": ">=0.8.0"
   },
   "scripts": {
-    "start": "gulp",
-    "deploy": "rsync -zvr --delete ./build USER_NAME@IP-Addr:/PATH"
-  }
+    "start": "gtb"
+  },
+  "preferGlobal": "true",
+  "bin": {
+    "gtb": "index.js"
+  },
+  "description": "builds and runs your frontend project",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kitze/gtb.git"
+  },
+  "keywords": [
+    "gulp",
+    "the",
+    "builder",
+    "kitze"
+  ],
+  "author": "Kitze <kristijan.mkd@gmail.com> (http://kitze.rocks/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kitze/gtb/issues"
+  },
+  "homepage": "https://github.com/kitze/gtb"
 }
