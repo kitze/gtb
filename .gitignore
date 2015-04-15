@@ -4,3 +4,7 @@ node_modules/
 custom-gulp-config.json
 projects.json
 npm-debug.log
+build/
+bower_components/
+.idea/
+.DS_STORE

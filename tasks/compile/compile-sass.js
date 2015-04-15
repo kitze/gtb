@@ -6,15 +6,20 @@ module.exports = function (gulp, plugins, config) {
   var _ = require('underscore');
   var getAdditionalLibraries = require('../../functions/get-additional-libraries')(gulp, plugins, config);
   var notifier = require('gulp-notify/node_modules/node-notifier');
+  var con = require('../../functions/console');
+  var chalk = require('chalk');
 
   return function () {
     var showError = function (err) {
+      var file = err.file.replace(dir(config.dirs.css), '');
       notifier.notify({
         'title': 'SASS error',
-        'message': err,
+        'message': err.message + " at " + file
       });
-      console.log('\n SASS file has error ------------->>> \n');
-      console.log(err);
+      con.custom(chalk.red.bold('SASS error: ') + err.message);
+      /* Don't show the full size of the path in the error */
+      con.custom(chalk.red.bold('File: ') + file);
+      con.custom(chalk.red.bold('Position: ') + 'Line:' + err.line + ' Column:' + err.column);
     };
 
     var bowerComponentsPath = global.prefix + config.dirs.bower + "/";

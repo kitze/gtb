@@ -4,6 +4,8 @@ module.exports = function (gulp, plugins, config) {
   var runSequence = require('run-sequence');
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var watchedFiles = [];
+  var con = require('../functions/console');
+  var chalk = require('chalk');
 
   function addWatcher(task, type, directory) {
     watchedFiles.push(gulp.watch(fileDir(type, directory), [task]));
@@ -48,7 +50,7 @@ module.exports = function (gulp, plugins, config) {
       if (event.type === 'deleted') {
         waitAndClean();
       }
-      console.log('File ' + event.path + ' was ---->> ' + event.type);
+      con.custom(chalk.green.bold(event.type+": ") + event.path.replace(dir(''),''));
     };
 
     watchedFiles.forEach(function (watchedFile) {

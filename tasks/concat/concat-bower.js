@@ -73,7 +73,7 @@ module.exports = function (gulp, plugins, config) {
      */
 
     if (!which('bower')) {
-      con.err('Bower is not installed. Please install it with "npm install -g bower" first');
+      con.err('Bower is not installed. Please install it with "npm install -g bower" before you run the script again.');
       exit(-1);
     }
 
@@ -92,7 +92,7 @@ module.exports = function (gulp, plugins, config) {
         }
         /* if some folders are missing from bower_components run bower install */
         else if (foldersInsideBowerDirectory < bowerDependenciesNumber) {
-          con.err('the bower_components folder doesn\'t match the bower.json file', foldersInsideBowerDirectory, bowerDependenciesNumber);
+          con.err('The bower components folder doesn\'t match the bower.json file', foldersInsideBowerDirectory, bowerDependenciesNumber);
           installBowerComponents();
         }
         else {
@@ -102,14 +102,14 @@ module.exports = function (gulp, plugins, config) {
       }
     }
     catch (e) {
-      con.hint('bower_components directory doesn\'t exist, creating it');
+      con.err('Bower components directory doesn\'t exist, creating it...');
       fs.mkdirSync(bowerDirectoryPath);
       /* Executes bower install in a sub-shell before it continues */
       installBowerComponents();
     }
 
     function installBowerComponents() {
-      console.log('executing bower install');
+      con.hint('Fixing bower components...');
       exec("( cd " + global.prefix + "; bower prune; bower install )");
       getFilesFromBower();
     }

@@ -11,7 +11,7 @@ module.exports = function (gulp, plugins, config) {
     _(config.replacements).each(function (replacement) {
       js = js.pipe(plugins.replace(replacement[0], replacement[1]))
     });
-    js.pipe(plugins.if(global.isProduction, plugins.ngAnnotate()))
+    js.pipe(plugins.ngAnnotate())
       .pipe(plugins.if(global.isProduction, plugins.uglify()))
       .pipe(gulp.dest(bdir(config.dirs.js)))
       .pipe(plugins.connect.reload());

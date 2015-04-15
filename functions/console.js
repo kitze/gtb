@@ -2,19 +2,23 @@ var chalk = require('chalk');
 var moment = require('moment');
 
 function timestamp(){
-  return "[" + chalk.gray.bold(new moment().format("HH:mm:ss")) + "] ";
+  return "[" + chalk.gray(new moment().format("HH:mm:ss")) + "]";
 }
 
 var log = function (toLog) {
-  console.log(timestamp() + arguments[0]);
+  [].unshift.call(arguments, timestamp());
+  console.log.apply(this, arguments);
 };
 
 module.exports = {
   log: log,
   err: function () {
-    log.apply(chalk.red.bold.apply(this, arguments))
+    log(chalk.red.bold.apply(this, arguments));
   },
   hint: function () {
     log(chalk.green.bold.apply(this, arguments));
+  },
+  custom: function(){
+    this.log.apply(this, arguments);
   }
 };
