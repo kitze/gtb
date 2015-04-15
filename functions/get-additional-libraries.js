@@ -10,7 +10,8 @@ module.exports = function (gulp, plugins, config) {
       }
       else {
         _.each(library.files, function (file) {
-          if (global.isProduction === false && config.gulp.ignore !== true || config.gulp.ignoredFiles[libType].indexOf(library.name) === -1) {
+          var ignoredProperty = config.gulp.ignoredFiles[libType];
+          if (global.isProduction === false && config.gulp.ignore !== true || (ignoredProperty === undefined || ignoredProperty.indexOf(library.name) === -1)) {
             libs.push(global.prefix + config.dirs.bower + "/" + library.name + "/" + file);
           }
           else {

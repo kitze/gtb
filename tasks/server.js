@@ -8,14 +8,6 @@ module.exports = function (gulp, plugins, config) {
       "root": global.prefix + config.dirs.build
     }));
 
-    figlet('GTB', function(err, data) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(data)
-    });
-
     if (config.gulp.openAfterLaunch) {
       open('http://localhost:' + config.server.port);
     }
