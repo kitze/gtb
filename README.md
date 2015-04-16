@@ -1,14 +1,85 @@
-# List of current commands:
+# GTB (Gulp The Builder)
 
-- gulp projects --- List all the projects defined in projects.json and pick one to run, if there are no projects available prompt for one
-- gulp run --- List all projects
-- gulp run -n projectName --- Run the project with name "projectName" from projects.json, if there is no "projectName" project show a menu for adding it
+Use gulp without the hassle of actually learning and writing gulp.
 
+What is it?
+-------
+**GTB** is a npm module which with the help of gulp and node.js can help you make your front-end development blazing fast, no matter what frameworks, libraries or languages you use.
+
+What does GTB do?
+-------
+
+ 1. **Watch**: watches your project directory for changes and acts accordingly depending on what you've changed
+ 2. **LiveReload**: if you make a change in a ```.js, .html, .jade, .json, .coffee``` file it will automatically refresh your browser when you save
+ 3. **Auto-inject changed CSS in the browser**: if you make a change in a ```.css, .scss, .sass``` file it will automatically inject the changes in the browser so you don't even have to do a full page reload. If you're viewing your application on multiple browsers you will see the changes reflect
+This may especially come in handy when you're writing/debugging css for a part of your application that isn't visible or reachable at a first glance. For example if you're debugging a dialog that can only be shown with doing few clicks, or a section that's far down your page. 
+A full page refresh will throw you off track every time you make a change, but when your css is auto-injected you will see the changes instantly no matter which part of your site your editing.
+ 2. **Compile SASS**: Compiles sass/scss, suports **sass globbing** so you can import whole folders (not default feature of sass) so for example you can write ```@import "sections/*";``` and have your whole folder imported.
+ 3. **Compile Jade/Coffeescript**: Compiles .jade to .html and .coffee to .js
+ 3. **Autoprefix CSS**: It makes your css development a little bit easier so you don't have to put all the browser prefixes by yourself. They'll be automatically added so when you write ``` display:flex ``` it will add the ```-webkit and -ms-``` prefixes automatically.
+ 4. **Image Minification**: Your png and jpg images are going to get optimizied and minified by imagemin automatically.
+ 5. **Concatenate, Minify & Annotate JS**: Your js files will be joined in one ``` app.js ``` file, no matter how much files you have in your js folder. If you're using angular your code will be automatically annotated so you don't [have to write your dependencies as strings](https://docs.angularjs.org/tutorial/step_05). If you're building the app in production mode  the code will be uglified (minified).
+ 6. **Notifications on compile errors**. If you have an error in a sass/jade/coffeescript file you don't have to open the terminal everytime to check what the error was. You will get a native Linux/Windows/OS X notification with the error so you can start fixing it immediately.
+ 6. **Include bower dependencies**: If you have some bower dependencies installed it will find their main files and include them in their final build, no matter if they're css or js. So for example if in your project directory you run ```bower install angular jquery --save ``` the angular and jquery main files would end up in your lib.js library. And if you ``` bower install normalize.css --save ``` the normalize.css will end up in your lib.css file. 
+ 7. **Custom bower logic**: If you install a bower dependency that includes many files by default and you just want to include one or few files from the whole library you can use some custom logic in your ```gulp-config.json``` file that will be generated inside your project. So if i have installed ```ngDialog``` with bower and i just want to include the js file without the themes, i would have this in my ```gulp-config.json```.
+   ```javascript
+    "additionalBowerFiles": {
+	    "js": [
+	      {
+	        "name": "ngDialog",
+	        "ignoreMain": true,
+	        "files": [
+	          "js/ngDialog.js"
+	        ]
+	      }
+	    ]
+    }
+    ```
+    
+ 6. **Watch bower.json for changes**: If you modify your bower.json file while gtb's watcher is running the dependencies you've added/deleted will be automatically added/deleted from your ```bower_components``` folder. Same logic goes if you pull a change from github and some of your collaborators added a new library in the bower.json it will be automatically be installed and you will get a notification.
+ 7. **Include library fonts**: Let's say you have **bootstrap** or **fontawesome** installed as a bower dependencies. GTB will take the fonts out of the library and copy them in your build folder and it will also modify their css files to link to the fonts properly. So you don't need to bother  to manually  copy or include the fonts.
+
+Files that GTB adds to your project
+-------
+
+ - GTB stores the names and directories of your project in a **projects.json** file in your home directory. So if you want to manually edit it on 
+ Linux/OS X you can go to
+ ```/home/username/projects.json```
+ or in Windows
+  ```C:\Users\Username\projects.json``` 
+ - GTB generates a **gulp-config.json** file for your project so inside of it you can specify the ```additionalBowerFiles```, ```ignoredFiles``` or all the settings that you want to set on a project level. If you use a revision control system like git or svn and add that file then the same config will be used by all of the contributors to the project.
+ - GTB also generates a **custom-gulp-config.json** that in the beginning is a simple copy of **gulp-config.json** and it will override every setting from **gulp-config.json** So for example if on a project level the ```livereload``` setting is set to ```true``` but for some weird reason you hate livereload and want to disable it on your pc then you can edit the setting in the **custom-gulp.json**. If you use git or svn that file won't be added to the repository.
+
+How to install?
+-------
+First, you have to have [node.js](https://nodejs.org/) on your machine.
+Then make sure you have bower installed as a global npm module:
+ ```npm install bower -g``` 
+Then just install gtb as a global npm module:
+ ``` npm install gtb -g ```.
+
+List of commands
+-------
+ - ``` gtb ``` - List of gtb features
+ - ``` gtb projects``` - List all of your projects and pick one to run
+ - ``` gtb . ``` - Run current directory that's opened in terminal
+ - ``` gtb run -n example ``` -  Run the project with the name "example", if - "example" doesn't exist in your projects, a prompt will be shown to add it
+ - ``` gtb run -n example -c copy:images ``` - Execute just specific gulp task on the project
+  
 -------------------------
-# To implement:
+# Commands to implement:
 
-- gulp run -n getfood -t copy:images --- Run specific task on a project
-- gulp build -n getfood 
-- gulp build -b normal -n getfood 
-- gulp build -b copy -n getfood
-- gulp copy -n getfood
+- ``` gtb build example ``` - shorthand for building a project in production mode
+- ``` gtb -n example -c compile:sass, copy:images, server``` - execute a specific list of tasks on the project
+
+# Features to implement
+
+ - automatically remove console.logs in production mode
+ - synchronize clicks, forms and inputs if debugging the project on multiple devices at once
+ - integrate fontello api for easier downloading and management of icons without the hassle of extracting archives, copying and pasting files
+ - minify class names
+ - LESS compile support
+ - if using angular put all the .html templates in angular templateCache so they're not loaded separately
+ - use cachebusting (i.e app.js?ver=134818) for getting the hash value of the files, to prevent the browser from caching js/css files that we need to be updated  
+ - use Andy Osmani's critical css plugin for extracting critical css to the head of the page, so the user can see the content faster
+ - use gulp-spritesmith for joining small png files together in a sprite and automatically generate css for them
