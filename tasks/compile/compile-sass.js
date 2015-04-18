@@ -49,18 +49,17 @@ module.exports = function (gulp, plugins, config) {
         }
       })
     });
-    var adds = getAdditionalLibraries(config.gulp.additionalBowerFiles, "css");
-
     gulp.src(dir(config.dirs.css + "/application.scss"))
       .pipe(plugins.cssGlobbing({
         extensions: ['.css', '.scss']
       }))
       .pipe(plugins.sass({onError: showError, includePaths: includePaths}))
       .pipe(plugins.addSrc(fileDir("css", "css")))
-      .pipe(plugins.addSrc(adds))
+      .pipe(plugins.addSrc(getAdditionalLibraries(config.gulp.additionalBowerFiles, "css")))
       .pipe(plugins.concat('app.css'))
-      .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
       .pipe(plugins.autoprefixer({browsers: ['last 2 version']}))
+      .pipe(plugins.if(!global.isProduction, plugins.cssbeautify()))
+      .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
       .pipe(gulp.dest(bdir(config.dirs.css)))
       .pipe(plugins.connect.reload());
   }
