@@ -29,7 +29,7 @@ module.exports = function (gulp, plugins, config) {
   function waitAndClean() {
     runSequence('clean:build');
     setTimeout(function () {
-      runSequence('copy', 'concat', 'watch');
+      runSequence('compile:jade', 'copy', 'concat', 'watch');
     }, 500);
   }
 
@@ -47,10 +47,10 @@ module.exports = function (gulp, plugins, config) {
 
     /* If each of the files is deleted, delete the build directory and run tasks again */
     var onChange = function (event) {
+      con.custom(chalk.green.bold(event.type + ": ") + event.path.replace(dir(''), ''));
       if (event.type === 'deleted') {
         waitAndClean();
       }
-      con.custom(chalk.green.bold(event.type+": ") + event.path.replace(dir(''),''));
     };
 
     watchedFiles.forEach(function (watchedFile) {
