@@ -78,7 +78,8 @@ module.exports = function () {
     fs.writeFileSync(files.CUSTOM_CONFIG, JSON.stringify(_(gulpConfigTemplate).omit(
       [
         'additionalBowerFiles',
-        'imagesFolder'
+        'imagesFolder',
+        'copyToFolder'
       ]
     )));
   }
@@ -89,7 +90,6 @@ module.exports = function () {
     if (currentGitIgnoreItems.length !== undefined) {
       _(shouldGitIgnore).each(function (item) {
         if (currentGitIgnoreItems.indexOf(item) == -1) {
-          console.log('to add -->', item);
           currentGitIgnoreItems.push(item);
         }
       });
