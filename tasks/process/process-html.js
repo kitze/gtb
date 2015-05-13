@@ -4,6 +4,8 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var fileDir = require('../../functions/file-dir')(config);
   var con = require('../../functions/console');
+  var through = require('through');
+  var handleError = require('../../functions/handle-error');
 
   var minifyHtmlOptions = {
     comments: false,
@@ -16,6 +18,7 @@ module.exports = function (gulp, plugins, config) {
   return function () {
     con.hint('Processing html ...');
     gulp.src(fileDir('jade', '')) // get .jade files from the root folder & templates folder
+      .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.jade({ // compile jade files to html
         pretty: true
       }))

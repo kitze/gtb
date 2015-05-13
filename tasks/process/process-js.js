@@ -4,10 +4,12 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var fileDir = require('../../functions/file-dir')(config);
   var con = require('../../functions/console');
+  var handleError = require('../../functions/handle-error');
 
   return function () {
     con.hint("Processing javascript ... ");
     gulp.src(fileDir("coffee", "js")) //find all the .coffee files in the project /js folder
+      .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.coffee({ // compile coffeescript to javascript files
         bare: false
       }))

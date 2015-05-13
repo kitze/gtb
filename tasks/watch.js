@@ -13,7 +13,7 @@ module.exports = function (gulp, plugins, config) {
     watchedFiles.push(gulp.watch(fileDir(["scss", "sass", "css"], "css"), ['process:css']));
 
     watchedFiles.forEach(function (watchedFile) {
-      watchedFile.on('change', function(){
+      watchedFile.on('change', function(event){
         con.custom(chalk.green.bold(event.type + ": ") + event.path.replace(dir(''), ''));
       });
     });

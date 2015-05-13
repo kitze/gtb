@@ -6,25 +6,16 @@ module.exports = function (gulp, plugins, config) {
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../../functions/console');
   var chalk = require('chalk');
-
-  function showError(err) {
-    var file = err.file.replace(dir(config.dirs.css), ''); //remove the absolute path of the css directory for the error message
-    notifier.notify({ // show a system notification when there's an error in a sass file
-      'title': 'SASS error',
-      'message': err.message + " at " + file
-    });
-    con.custom(chalk.red.bold('SASS error: ') + err.message);
-    con.custom(chalk.red.bold('File: ') + file);
-    con.custom(chalk.red.bold('Position: ') + 'Line:' + err.line + ' Column:' + err.column);
-  }
+  var handleError = require('../../functions/handle-error');
 
   return function () {
     con.hint('Processing css ...');
     gulp.src(dir(config.dirs.css + "/application.scss")) //add application.scss (where all the other scss files are included) to the event stream
+      .pipe(plugins.plumber()) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.cssGlobbing({ //replace global imports (@import some-folder/*) with multiple import lines that node-sass can understand
         extensions: ['.css', '.scss']
       }))
-      .pipe(plugins.sass({onError: showError, includePaths: [global.prefix + config.dirs.bower + "/"]}))//compile sass files into css (include paths is an array of directories where node-sass can look for files when @import-ing them)
+      .pipe(plugins.sass({onError: handleError, includePaths: [global.prefix + config.dirs.bower + "/"]}))//compile sass files into css (include paths is an array of directories where node-sass can look for files when @import-ing them)
       .pipe(plugins.addSrc(fileDir("css", "css"))) // add .css files from the project css directory to the event stream
       //.pipe(plugins.addSrc(getAdditionalLibraries(config.gulp.additionalBowerFiles, "css"))) //get additional bower files defined in the gulp-config and add them to the stream
       .pipe(plugins.concat('app.css'))// concatenate everything into app.css file
