@@ -4,7 +4,6 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var fileDir = require('../../functions/file-dir')(config);
   var con = require('../../functions/console');
-  var through = require('through');
   var handleError = require('../../functions/handle-error');
 
   var minifyHtmlOptions = {

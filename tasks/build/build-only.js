@@ -6,8 +6,7 @@ module.exports = function () {
     con.hint('Building project...');
     global.isProduction = true;
     runSequence(
-      'copy',
-      'concat'
+      'process'
     );
   }
 };
