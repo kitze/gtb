@@ -8,9 +8,7 @@ var gulp               = require('gulp'),
     plugins            = require('gulp-load-plugins')({config: '../../package.json'}),
     historyApiFallback = require('connect-history-api-fallback'),
     bdir               = require('../functions/build-dir'),
-    con                = require('../functions/console'),
-    jf                 = require('jsonfile'),
-    util               = require('util');
+    con                = require('../functions/console');
 
 var files = {
   GULP_CONFIG: global.prefix + "gulp-config.json",
@@ -19,9 +17,6 @@ var files = {
 };
 
 var file = './projects.json';
-jf.readFileSync(file, {}, function (err, obj) {
-  console.log(util.inspect(obj))
-});
 
 var shouldGitIgnore = [
   "build/",
@@ -125,11 +120,9 @@ module.exports = function () {
     ["G_DEPENDENCIES", JSON.stringify(dependencies)]
   ];
 
-  /* ================================= Task Loader Functions  =========================== */
-
-  /* Each of the tasks that are in a separate file needs access to
-   * the variables "gulp", "plugins" and "tasksConfig", so when a tasks is required
-   * those 3 are supplied as arguments
+  /* Each of the gulp tasks that are in a separate file needs access to
+   * the variables "gulp", "plugins" and "tasksConfig", so when a task is required
+   * those 3 variables are supplied as arguments
    * */
   function addTask(folder, task, runBeforeTask) {
     var taskName = task ? (folder + ":" + task) : folder;
@@ -137,16 +130,9 @@ module.exports = function () {
     gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require("../tasks" + "/" + taskFolder)(gulp, plugins, tasksConfig));
   }
 
-  function addTaskCombination(name) {
-    var args = Array.prototype.slice.call(arguments);
-    var final = [];
-    _(args).each(function (arr, key) {
-      if (key === 0)
-        return;
-      final = final.concat(arr);
-    });
+  function addTaskCombination(name, tasks) {
     gulp.task(name, function () {
-      runSequence(final);
+      runSequence(getTaskGroup(name, tasks));
     });
   }
 
@@ -181,31 +167,23 @@ module.exports = function () {
   addTask('clean', 'build');
   addTask('clean', 'zip');
 
-  /* Compile */
-  addTask('compile', 'coffee');
-  addTask('compile', 'jade');
-  addTask('compile', 'sass');
+  /* Process */
+  addTask('process', 'html');
+  addTask('process', 'css');
+  addTask('process', 'js');
+  addTask('process', 'bower');
+  addTask('process', 'fonts');
+  addTask('process', 'images');
+  addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images']);
 
-  /* Concat */
-  addTask('concat', 'js');
-  addTask('concat', 'bower');
-  addTaskCombination('concat', ['compile:sass'], getTaskGroup('concat', ['bower', 'js']));
-
-  /* Copy */
+  /* Copies build folder to the directory defined in the "copyToFolder" property in gulp-config.json */
   addTask('copy', 'build');
-  addTask('copy', 'font');
-  addTask('copy', 'fonts');
-  addTask('copy', 'html', ['compile:jade']);
-  addTask('copy', 'htmlroot');
-  addTask('copy', 'images', ['imagemin']);
+
+  /* Copies json directory to build directory */
   addTask('copy', 'json');
-  addTaskCombination('copy', ['clean:build', 'concat:bower'], getTaskGroup('copy', ['html', 'images', 'json', 'fonts', 'font', 'htmlroot']));
 
   /* Run server that will serve index.html and the assets */
   addTask('server');
-
-  /* Minify images */
-  addTask('imagemin');
 
   /* Build the app and put the 'build' folder in a zip file */
   addTask('zip');
@@ -225,10 +203,8 @@ module.exports = function () {
   /* Run the built & minified site in production mode without hashing anything and copying to the destination folder */
   addTask('build', 'prod');
 
-//addTask('cleanselectors');
-
   /* Default task: Builds the app and runs the server without minifying or copying anything to a destination */
   gulp.task('default', function () {
-    runSequence(['copy', 'concat', 'server', 'watch'])
+    runSequence(['process', 'server', 'watch'])
   });
 };
