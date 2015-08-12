@@ -69,6 +69,7 @@ module.exports = function (gulp, plugins, config) {
       gulp.src(bowerFiles)
         .pipe(jsFilter)
         .pipe(plugins.concat('lib.js'))
+        .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
         .pipe(plugins.if(global.isProduction, plugins.uglify()))
         .pipe(gulp.dest(bdir(config.dirs.js)))
         .pipe(plugins.connect.reload());
