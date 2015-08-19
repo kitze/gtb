@@ -22,10 +22,10 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.autoprefixer({browsers: ['last 2 version']})) // autoprefix the needed css properties so the css is supported on the last 2 versions of every browser
       .pipe(plugins.if(!global.isProduction, plugins.cssbeautify())) //if not in production mode beautify the code so we can easily read the source
       .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'}))) // if in production mode minify/uglify the css
-      .pipe(plugins.rev())
+      .pipe(plugins.if(global.isProduction, plugins.rev()))
       .pipe(gulp.dest(bdir(config.dirs.css))) // place the app.css files into the build/css folder of the project
-      .pipe(plugins.rev.manifest() )
-      .pipe( gulp.dest( bdir('rev/appcss') ))
+      .pipe(plugins.if(global.isProduction, plugins.rev.manifest()) )
+      .pipe(plugins.if(global.isProduction, gulp.dest( bdir('rev/appcss') )))
       .pipe(plugins.connect.reload()); //reload the browser after changes
   }
 };

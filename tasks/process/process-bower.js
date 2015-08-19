@@ -57,11 +57,11 @@ module.exports = function (gulp, plugins, config) {
           callback(null, file);
         }))
         .pipe(plugins.concat('lib.css'))
-        .pipe(plugins.rev())
+        .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
         .pipe(gulp.dest(bdir(config.dirs.css)))
-        .pipe(plugins.rev.manifest() )
-        .pipe( gulp.dest( bdir('rev/libcss') ));
+        .pipe(plugins.if(global.isProduction,plugins.rev.manifest()))
+        .pipe(plugins.if(global.isProduction,gulp.dest( bdir('rev/libcss'))));
 
       gulp.src(bowerFiles)
         .pipe(assetsFilter)
@@ -74,10 +74,10 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.concat('lib.js'))
         .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
         .pipe(plugins.if(global.isProduction, plugins.uglify()))
-        .pipe(plugins.rev())
+        .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(gulp.dest(bdir(config.dirs.js)))
-        .pipe(plugins.rev.manifest() )
-        .pipe( gulp.dest( bdir('rev/libjs') ))
+        .pipe(plugins.if(global.isProduction, plugins.rev.manifest() ))
+        .pipe(plugins.if(global.isProduction, gulp.dest( bdir('rev/libjs') )))
         .pipe(plugins.connect.reload());
     });
   }

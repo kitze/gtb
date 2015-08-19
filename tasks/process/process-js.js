@@ -16,10 +16,10 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
       .pipe(plugins.batchReplace(config.replacements))// find and replace strings from config.replacements and from project config file
       .pipe(plugins.if(global.isProduction, plugins.uglify())) // if in production mode uglify/minify app.js
-      .pipe(plugins.rev())
+      .pipe(plugins.if(global.isProduction,plugins.rev()))
       .pipe(gulp.dest(bdir(config.dirs.js))) //place the app.js file into the build folder of the project
-      .pipe(plugins.rev.manifest() )
-      .pipe( gulp.dest( bdir('rev/appjs') ))
+      .pipe(plugins.if(global.isProduction,plugins.rev.manifest()))
+      .pipe( plugins.if(global.isProduction,gulp.dest( bdir('rev/appjs'))))
         .pipe(plugins.connect.reload()); //refresh the browser
   }
 };
