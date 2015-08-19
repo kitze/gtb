@@ -33,6 +33,7 @@
     "gulp-plumber": "^1.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "~0.5.3",
+    "gulp-rev": "^5.1.0",
     "gulp-sass": "2.0.4",
     "gulp-selectors": "^0.1.5",
     "gulp-sourcemaps": "1.2.8",

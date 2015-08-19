@@ -3,6 +3,7 @@ var gulp               = require('gulp'),
     fs                 = require('fs'),
     os                 = require('os'),
     _                  = require('underscore'),
+    del                = require('del'),
     args               = require('yargs').argv,
     runSequence        = require('run-sequence'),
     plugins            = require('gulp-load-plugins')({config: '../../package.json'}),
@@ -130,9 +131,9 @@ module.exports = function () {
     gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require("../tasks" + "/" + taskFolder)(gulp, plugins, tasksConfig));
   }
 
-  function addTaskCombination(name, tasks) {
+  function addTaskCombination(name, tasks, cb) {
     gulp.task(name, function () {
-      runSequence(getTaskGroup(name, tasks));
+      runSequence(getTaskGroup(name, tasks), cb);
     });
   }
 
@@ -174,7 +175,16 @@ module.exports = function () {
   addTask('process', 'bower');
   addTask('process', 'fonts');
   addTask('process', 'images');
-  addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images']);
+
+  addTask('rev');
+
+  addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images'], function () {
+    /* after everything is done run rev to add revision numbers to the files */
+    runSequence('rev', 'cleanup');
+  });
+
+  /* Cleans up folders & files that are not needed after run/build */
+  addTask('cleanup');
 
   /* Copies build folder to the directory defined in the "copyToFolder" property in gulp-config.json */
   addTask('copy', 'build');

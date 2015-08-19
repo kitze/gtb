@@ -57,8 +57,11 @@ module.exports = function (gulp, plugins, config) {
           callback(null, file);
         }))
         .pipe(plugins.concat('lib.css'))
+        .pipe(plugins.rev())
         .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-        .pipe(gulp.dest(bdir(config.dirs.css)));
+        .pipe(gulp.dest(bdir(config.dirs.css)))
+        .pipe(plugins.rev.manifest() )
+        .pipe( gulp.dest( bdir('rev/libcss') ));
 
       gulp.src(bowerFiles)
         .pipe(assetsFilter)
@@ -66,12 +69,15 @@ module.exports = function (gulp, plugins, config) {
         .pipe(assetsFilter.restore());
 
       /* Get JS files from bower directory */
-      gulp.src(bowerFiles)
+      return gulp.src(bowerFiles)
         .pipe(jsFilter)
         .pipe(plugins.concat('lib.js'))
         .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
         .pipe(plugins.if(global.isProduction, plugins.uglify()))
+        .pipe(plugins.rev())
         .pipe(gulp.dest(bdir(config.dirs.js)))
+        .pipe(plugins.rev.manifest() )
+        .pipe( gulp.dest( bdir('rev/libjs') ))
         .pipe(plugins.connect.reload());
     });
   }
