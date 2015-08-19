@@ -10,7 +10,6 @@
     "extfs": "0.0.7",
     "figlet": "^1.1.0",
     "gulp": "3.9.0",
-    "gulp-add-src": "^0.2.0",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-babel": "^5.1.0",
     "gulp-batch-replace": "0.0.0",
@@ -53,6 +52,7 @@
     "protractor": "0.16.1",
     "run-sequence": "0.3.6",
     "shelljs": "^0.4.0",
+    "streamqueue": "^1.1.0",
     "underscore": "1.7.0",
     "yargs": "1.2.1"
   },
