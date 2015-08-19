@@ -180,7 +180,7 @@ module.exports = function () {
 
   addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images'], function () {
     /* after everything is done run rev to add revision numbers to the files */
-    if(global.isProduction) {
+    if(global.isProduction === true) {
       runSequence('rev', 'cleanup');
     }
   });
