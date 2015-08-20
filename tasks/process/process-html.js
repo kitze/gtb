@@ -12,7 +12,8 @@ module.exports = function (gulp, plugins, config) {
     quotes: true,
     spare: true,
     empty: true,
-    cdata: true
+    cdata: true,
+    loose: true
   };
 
   return function () {
@@ -22,7 +23,7 @@ module.exports = function (gulp, plugins, config) {
       return !/_/.test(file.path);
     });
 
-    var includeJustCacheFilter = plugins.filter(function(file){
+    var includeJustCacheFilter = plugins.filter(function (file) {
       return /templates\.js/.test(file.path);
     });
 
