@@ -54,7 +54,8 @@
     "shelljs": "^0.4.0",
     "streamqueue": "^1.1.0",
     "underscore": "1.7.0",
-    "yargs": "1.2.1"
+    "yargs": "1.2.1",
+    "gulp-angular-templatecache": "^1.7.0"
   },
   "engines": {
     "node": ">=0.8.0"
@@ -83,8 +84,5 @@
   "bugs": {
     "url": "https://github.com/kitze/gtb/issues"
   },
-  "homepage": "https://github.com/kitze/gtb",
-  "devDependencies": {
-    "gulp-angular-templatecache": "^1.7.0"
-  }
+  "homepage": "https://github.com/kitze/gtb"
 }
