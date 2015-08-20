@@ -9,6 +9,7 @@ module.exports = function (gulp, plugins, config) {
   var dir = require('../../functions/dir')(config);
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../../functions/console');
+  var streamqueue = require('streamqueue');
 
   var jsFilter     = plugins.filter('**/*.js'),
       cssFilter    = plugins.filter(['*.css', '**/*.css']),
@@ -40,7 +41,7 @@ module.exports = function (gulp, plugins, config) {
       }
 
       /* Get CSS files from bower directory */
-      gulp.src(bowerFiles)
+      var libCssStream = gulp.src(bowerFiles)
         .pipe(cssFilter)
         .pipe(map(function (file, callback) {
           var relativePath = path.dirname(path.relative(path.resolve(config.dirs.js), file.path));
@@ -61,15 +62,16 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
         .pipe(gulp.dest(bdir(config.dirs.css)))
         .pipe(plugins.if(global.isProduction,plugins.rev.manifest()))
-        .pipe(plugins.if(global.isProduction,gulp.dest( bdir('rev/libcss'))));
+        .pipe(plugins.if(global.isProduction,gulp.dest( bdir('rev/libcss'))))
+        .pipe(cssFilter.restore());
 
-      gulp.src(bowerFiles)
+      var assetsStream = gulp.src(bowerFiles)
         .pipe(assetsFilter)
         .pipe(gulp.dest(bdir(config.dirs.js)))
         .pipe(assetsFilter.restore());
 
       /* Get JS files from bower directory */
-      return gulp.src(bowerFiles)
+      var libJsStream =  gulp.src(bowerFiles)
         .pipe(jsFilter)
         .pipe(plugins.concat('lib.js'))
         .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
@@ -77,8 +79,11 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(gulp.dest(bdir(config.dirs.js)))
         .pipe(plugins.if(global.isProduction, plugins.rev.manifest() ))
-        .pipe(plugins.if(global.isProduction, gulp.dest( bdir('rev/libjs') )))
+        .pipe(plugins.if(global.isProduction, gulp.dest( bdir('rev/libjs') )));
+
+      return streamqueue({objectMode: true}, libCssStream, assetsStream, libJsStream)
         .pipe(plugins.connect.reload());
+
     });
   }
 };

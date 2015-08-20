@@ -7,7 +7,8 @@ module.exports = function (gulp, plugins, config) {
 
   return function () {
     con.hint('Processing images ...');
-    gulp.src(fileDir('*', 'images'))
+
+    return gulp.src(fileDir('*', 'images'))
       .pipe(plugins.imagemin({
         progressive: true,
         use: [pngquant()]

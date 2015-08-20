@@ -209,6 +209,8 @@ module.exports = function () {
   /* Just build the project in production mode, don't run anything else */
   addTask('build', 'only');
 
+  addTask('build', 'serve');
+
   /* Just build the project in normal non-production mode, don't run anything else */
   addTask('build', 'normal');
 

@@ -83,5 +83,8 @@
   "bugs": {
     "url": "https://github.com/kitze/gtb/issues"
   },
-  "homepage": "https://github.com/kitze/gtb"
+  "homepage": "https://github.com/kitze/gtb",
+  "devDependencies": {
+    "gulp-angular-templatecache": "^1.7.0"
+  }
 }
