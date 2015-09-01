@@ -1,6 +1,4 @@
 var gulp                 = require('gulp'),
-    fs                   = require('fs'),
-    os                   = require('os'),
     _                    = require('underscore'),
     args                 = require('yargs').argv,
     runSequence          = require('run-sequence'),
@@ -31,53 +29,24 @@ module.exports = function () {
    * those 3 variables are supplied as arguments
    * */
 
-  function addTask(folder, task, runBeforeTask) {
-    var taskName = task ? (folder + ':' + task) : folder;
-    var taskFolder = '/' + folder + (task ? '/' : '') + (task ? (folder + '-' + task) : (task ? folder : ''));
-    gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require('../tasks' + '/' + taskFolder)(gulp, plugins, tasksConfig));
+  function addTask(taskName, taskPath) {
+    gulp.task(taskName, require(files.GULP_TASKS + (taskPath ? taskPath : taskName))(gulp, plugins, tasksConfig));
   }
 
-  function addTaskCombination(name, tasks, cb) {
-    gulp.task(name, function () {
-      runSequence(getTaskGroup(name, tasks), cb);
+  function addTaskFolder(folder, tasksArray) {
+    _.each(tasksArray, function (taskName) {
+      addTask(folder + ':' + taskName, folder + "/" + folder + "-" + taskName);
     });
   }
 
-  function getTaskGroup(name, arr) {
-    return _(arr).map(function (m) {
-      return name + ':' + m
-    });
-  }
+  /*  ================== Add tasks from folders ================== */
 
-  // Clean 
-  addTask('clean', 'build');
-  addTask('clean', 'zip');
+  addTaskFolder('process', ['html', 'css', 'js', 'bower', 'fonts', 'images']);
+  addTaskFolder('clean', ['build', 'zip', 'rev']);
+  addTaskFolder('build', ['only', 'serve']);
+  addTaskFolder('copy', ['build', 'json']);
 
-  // Process 
-  addTask('process', 'html');
-  addTask('process', 'css');
-  addTask('process', 'js');
-  addTask('process', 'bower');
-  addTask('process', 'fonts');
-  addTask('process', 'images');
-
-  addTask('rev');
-
-  addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images'], function () {
-    // after everything is done run rev to add revision numbers to the files 
-    if (global.isProduction === true) {
-      runSequence('rev', 'cleanup');
-    }
-  });
-
-  // Cleans up folders & files that are not needed after run/build 
-  addTask('cleanup');
-
-  // Copies build folder to the directory defined in the "copyToFolder" property in gulp-config.json 
-  addTask('copy', 'build');
-
-  // Copies json directory to build directory 
-  addTask('copy', 'json');
+  /*  ================== Tasks ================== */
 
   // Run server that will serve index.html and the assets 
   addTask('server');
@@ -88,23 +57,13 @@ module.exports = function () {
   // Watch the directories for changes and reload the page, or if a scss/css file is changed inject it automatically without refreshing 
   addTask('watch');
 
-  // Delete build folder, copy, minify, annotate everything, then copy it to the destination folder 
-  addTask('build', 'copy');
+  // Replaces filenames in index.html with the new ones that the rev task produced
+  addTask('replace-rev');
 
-  // Just build the project in production mode, don't run anything else 
-  addTask('build', 'only');
+  // Processes bower files, js, css, fonts, images, html
+  addTask('process');
 
-  // Just serve the project in production mode
-  addTask('build', 'serve');
+  // Builds the app and runs the server
+  addTask('default');
 
-  // Just build the project in normal non-production mode, don't run anything else 
-  addTask('build', 'normal');
-
-  // Run the built & minified site in production mode without hashing anything and copying to the destination folder 
-  addTask('build', 'prod');
-
-  // Default task: Builds the app and runs the server without minifying or copying anything to a destination 
-  gulp.task('default', function () {
-    runSequence(['process', 'server', 'watch'])
-  });
 };

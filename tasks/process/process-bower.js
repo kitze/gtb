@@ -10,6 +10,7 @@ module.exports = function (gulp, plugins, config) {
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../../functions/console');
   var streamqueue = require('streamqueue');
+  var Q = require('Q');
 
   var jsFilter     = plugins.filter('**/*.js'),
       cssFilter    = plugins.filter(['*.css', '**/*.css']),
@@ -24,7 +25,7 @@ module.exports = function (gulp, plugins, config) {
   }
 
   return function () {
-
+    var deferred = Q.defer();
     con.hint('Processing bower ... ');
 
     getAllBowerFiles().then(function (bowerFiles) {
@@ -61,8 +62,8 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
         .pipe(gulp.dest(bdir(config.dirs.css)))
-        .pipe(plugins.if(global.isProduction,plugins.rev.manifest()))
-        .pipe(plugins.if(global.isProduction,gulp.dest( bdir('rev/libcss'))))
+        .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
+        .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/libcss'))))
         .pipe(cssFilter.restore());
 
       var assetsStream = gulp.src(bowerFiles)
@@ -71,19 +72,22 @@ module.exports = function (gulp, plugins, config) {
         .pipe(assetsFilter.restore());
 
       /* Get JS files from bower directory */
-      var libJsStream =  gulp.src(bowerFiles)
+      var libJsStream = gulp.src(bowerFiles)
         .pipe(jsFilter)
         .pipe(plugins.concat('lib.js'))
         .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
         .pipe(plugins.if(global.isProduction, plugins.uglify()))
         .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(gulp.dest(bdir(config.dirs.js)))
-        .pipe(plugins.if(global.isProduction, plugins.rev.manifest() ))
-        .pipe(plugins.if(global.isProduction, gulp.dest( bdir('rev/libjs') )));
+        .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
+        .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/libjs'))));
 
-      return streamqueue({objectMode: true}, libCssStream, assetsStream, libJsStream)
+      streamqueue({objectMode: true}, libCssStream, assetsStream, libJsStream)
         .pipe(plugins.connect.reload());
 
+      deferred.resolve();
     });
+
+    return deferred.promise;
   }
 };

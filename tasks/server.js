@@ -5,6 +5,7 @@ var open         = require('open'),
 module.exports = function (gulp, plugins, config) {
 
   return function () {
+
     plugins.connect.server(_(serverConfig).extend({
       "root": global.prefix + config.dirs.build
     }));

@@ -11,7 +11,8 @@ module.exports = function (gulp, plugins, config) {
     return gulp.src(fileDir('*', 'images'))
       .pipe(plugins.imagemin({
         progressive: true,
-        use: [pngquant()]
+        use: [pngquant()],
+        verbose: undefined
       }))
       .pipe(gulp.dest(bdir(config.dirs.images)))
       .pipe(plugins.connect.reload());

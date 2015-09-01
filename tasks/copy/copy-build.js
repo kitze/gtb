@@ -5,6 +5,8 @@ module.exports = function (gulp, plugins, config) {
   var bdir = require('../../functions/build-dir')(config);
   var dir = require('../../functions/dir')(config);
 
+  // Copies build folder to the directory defined in the "copyToFolder" property in gulp-config.json
+
   return function () {
     if (config.gulp.copyToFolder) {
       var copyPath = path.join(global.prefix + config.gulp.copyToFolder);
