@@ -1,50 +1,18 @@
-/* dependencies */
-var gulp               = require('gulp'),
-    fs                 = require('fs'),
-    os                 = require('os'),
-    _                  = require('underscore'),
-    del                = require('del'),
-    args               = require('yargs').argv,
-    runSequence        = require('run-sequence'),
-    plugins            = require('gulp-load-plugins')({config: '../../package.json'}),
-    historyApiFallback = require('connect-history-api-fallback'),
-    bdir               = require('../functions/build-dir'),
-    con                = require('../functions/console');
-
-var files = {
-  GULP_CONFIG: global.prefix + "gulp-config.json",
-  CUSTOM_CONFIG: global.prefix + "custom-gulp-config.json",
-  GIT_IGNORE: global.prefix + ".gitignore"
-};
+var gulp                 = require('gulp'),
+    fs                   = require('fs'),
+    os                   = require('os'),
+    _                    = require('underscore'),
+    args                 = require('yargs').argv,
+    runSequence          = require('run-sequence'),
+    plugins              = require('gulp-load-plugins')({config: '../../package.json'}),
+    historyApiFallback   = require('connect-history-api-fallback'),
+    bdir                 = require('../functions/build-dir'),
+    con                  = require('../functions/console'),
+    fixGitIgnore         = require('../functions/fix-git-ignore'),
+    writeGulpConfigFiles = require('../functions/write-gulp-config-files'),
+    files                = require('../config/files-config');
 
 var file = './projects.json';
-
-var shouldGitIgnore = [
-  "build/",
-  "bower_components/",
-  ".idea/",
-  "custom-gulp-config.json",
-  ".DS_STORE",
-  "npm-debug.log"
-];
-
-var gulpConfigTemplate = {
-  "serverPort": 9000,
-  "openAfterLaunch": true,
-  "copyToFolder": "copy",
-  "imagesFolder": "img",
-  "ignore": false,
-  "liveReload": true,
-  "additionalBowerFiles": {
-    "js": [],
-    "fonts": [],
-    "sass": []
-  },
-  "ignoredFiles": {
-    "js": [],
-    "dependencies": []
-  }
-};
 
 var directories = {
   root: '/',
@@ -64,40 +32,14 @@ var directories = {
 };
 
 module.exports = function () {
-  /* If a gulp config doesn't exist for the project generate one that will be global for the project */
-  if (!fs.existsSync(files.GULP_CONFIG)) {
-    fs.writeFileSync(files.GULP_CONFIG, JSON.stringify(gulpConfigTemplate));
-  }
 
-  /* If a custom gulp config doesn't exist generate one so every user can have his custom settings */
-  if (!fs.existsSync(files.CUSTOM_CONFIG)) {
-    fs.writeFileSync(files.CUSTOM_CONFIG, JSON.stringify(_(gulpConfigTemplate).omit(
-      [
-        'additionalBowerFiles',
-        'imagesFolder',
-        'copyToFolder'
-      ]
-    )));
-  }
+  /* Initialize sequence */
 
-  var newGitIgnore;
-  if (fs.existsSync(files.GIT_IGNORE)) {
-    var currentGitIgnoreItems = fs.readFileSync(files.GIT_IGNORE, 'utf8').split(os.EOL);
-    if (currentGitIgnoreItems.length !== undefined) {
-      _(shouldGitIgnore).each(function (item) {
-        if (currentGitIgnoreItems.indexOf(item) == -1) {
-          currentGitIgnoreItems.push(item);
-        }
-      });
-      newGitIgnore = currentGitIgnoreItems;
-    }
-  }
-  else {
-    console.log('.gitignore doesnt exist, writing it');
-    newGitIgnore = shouldGitIgnore;
-  }
+  /* write gulp config files */
+  writeGulpConfigFiles();
 
-  fs.writeFileSync(files.GIT_IGNORE, _(newGitIgnore).compact().join(os.EOL));
+  /* fix gitignore */
+  fixGitIgnore();
 
   /* Get the default gulp config */
   var gulpConfig = JSON.parse(fs.readFileSync(files.GULP_CONFIG, 'utf8'));
@@ -105,20 +47,13 @@ module.exports = function () {
   /* Merge the custom gulp config with the default one so every custom setting can be overriden */
   gulpConfig = _.extend(gulpConfig, JSON.parse(fs.readFileSync(files.CUSTOM_CONFIG, 'utf8')));
 
-  /* If the project is an angular project the dependencies should be specified in the gulp config so if the user wants some of the
-   * dependencies to be ignored just on his machine he can specify that in the gulpConfig.ignoredFiles.dependencies property.
-   */
-  var dependencies = _(gulpConfig.dependencies).filter(function (dependency) {
-    return global.isProduction === true || gulpConfig.ignore !== true || gulpConfig.ignoredFiles.dependencies.indexOf(dependency) === -1;
-  });
 
   /* In the replacements array you can add any key:value that later will be replaced in every of the html and js files
    * So for example if your app needs access to the port the app is running on and you have the port define in your gulpfile you can access
    * it easily from your html/js.
    */
   var replacements = [
-    ["G_SERVER_PORT", gulpConfig.serverPort],
-    ["G_DEPENDENCIES", JSON.stringify(dependencies)]
+    ['G_SERVER_PORT', gulpConfig.serverPort]
   ];
 
   /* Each of the gulp tasks that are in a separate file needs access to
@@ -126,9 +61,9 @@ module.exports = function () {
    * those 3 variables are supplied as arguments
    * */
   function addTask(folder, task, runBeforeTask) {
-    var taskName = task ? (folder + ":" + task) : folder;
-    var taskFolder = "/" + folder + (task ? "/" : '') + (task ? (folder + "-" + task) : (task ? folder : ''));
-    gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require("../tasks" + "/" + taskFolder)(gulp, plugins, tasksConfig));
+    var taskName = task ? (folder + ':' + task) : folder;
+    var taskFolder = '/' + folder + (task ? '/' : '') + (task ? (folder + '-' + task) : (task ? folder : ''));
+    gulp.task(taskName, runBeforeTask ? runBeforeTask : [], require('../tasks' + '/' + taskFolder)(gulp, plugins, tasksConfig));
   }
 
   function addTaskCombination(name, tasks, cb) {
@@ -139,16 +74,16 @@ module.exports = function () {
 
   function getTaskGroup(name, arr) {
     return _(arr).map(function (m) {
-      return name + ":" + m
+      return name + ':' + m
     });
   }
 
   var settings = {
     /* Settings for the node server that will serve our index.html and assets */
     server: {
-      "host": 'localhost',
-      "livereload": gulpConfig.liveReload,  // Tip: disable livereload if you're using older versions of internet explorer because it doesn't work
-      "middleware": function () {
+      'host': 'localhost',
+      'livereload': gulpConfig.liveReload,  // Tip: disable livereload if you're using older versions of internet explorer because it doesn't work
+      'middleware': function () {
         return [historyApiFallback];
       },
       port: gulpConfig.serverPort
@@ -180,7 +115,7 @@ module.exports = function () {
 
   addTaskCombination('process', ['html', 'css', 'js', 'bower', 'fonts', 'images'], function () {
     /* after everything is done run rev to add revision numbers to the files */
-    if(global.isProduction === true) {
+    if (global.isProduction === true) {
       runSequence('rev', 'cleanup');
     }
   });
