@@ -1,13 +1,12 @@
 var gulp                 = require('gulp'),
     _                    = require('underscore'),
     args                 = require('yargs').argv,
-    runSequence          = require('run-sequence'),
-    plugins              = require('gulp-load-plugins')({config: '../../package.json'}),
     bdir                 = require('../functions/build-dir'),
     con                  = require('../functions/console'),
     fixGitIgnore         = require('../functions/fix-git-ignore'),
     writeGulpConfigFiles = require('../functions/write-gulp-config-files'),
     files                = require('../config/files-config'),
+    plugins              = require('gulp-load-plugins')({config: files.PACKAGE_JSON}),
     directories          = require('../config/directories-config');
 
 module.exports = function () {
