@@ -1,17 +1,10 @@
-var open         = require('open'),
-    _            = require('underscore'),
-    serverConfig = require('../config/server-config');
+module.exports = function () {
+  var browserSync = require('../classes/browser-sync'),
+      con         = require('../functions/console');
 
-module.exports = function (gulp, plugins, config) {
+  con.hint('Starting server');
 
   return function () {
-
-    plugins.connect.server(_(serverConfig).extend({
-      "root": global.prefix + config.dirs.build
-    }));
-
-    if (config.gulp.openAfterLaunch) {
-      open('http://localhost:' + serverConfig.port);
-    }
+    browserSync.init();
   }
 };

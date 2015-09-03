@@ -1,11 +1,32 @@
 var historyApiFallback = require('connect-history-api-fallback'),
-    gulpConfig         = require('../functions/gulp-config')();
+    directories        = require('../config/directories-config'),
+    gulpConfig         = require('../functions/gulp-config')(),
+    _                  = require('underscore');
 
-module.exports = {
-  'host': 'localhost',
-  'livereload': gulpConfig.liveReload,  // Tip: disable livereload if you're using older versions of internet explorer because it doesn't work
-  'middleware': function () {
-    return [historyApiFallback];
-  },
-  port: gulpConfig.serverPort
+module.exports = function () {
+
+  var serverConfig = {
+    server: {
+      baseDir: global.prefix + directories.build,
+      middleware: [historyApiFallback()]
+    },
+    ui: false,
+    notify: false,
+    port: gulpConfig.serverPort,
+    ghostMode: {
+      clicks: gulpConfig.syncClicks,
+      forms: gulpConfig.syncForms,
+      scroll: gulpConfig.syncScroll
+    },
+    open: false
+  };
+
+  if (gulpConfig.openAfterLaunch === true) {
+    serverConfig = _.extend(serverConfig, {
+      open: gulpConfig.openAfterLaunch,
+      browser: gulpConfig.openInBrowsers
+    });
+  }
+
+  return serverConfig;
 };

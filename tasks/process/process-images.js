@@ -14,7 +14,6 @@ module.exports = function (gulp, plugins, config) {
         use: [pngquant()],
         verbose: undefined
       }))
-      .pipe(gulp.dest(bdir(config.dirs.images)))
-      .pipe(plugins.connect.reload());
+      .pipe(gulp.dest(bdir(config.dirs.images)));
   }
 };

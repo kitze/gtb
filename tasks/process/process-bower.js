@@ -9,7 +9,7 @@ module.exports = function (gulp, plugins, config) {
   var dir = require('../../functions/dir')(config);
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../../functions/console');
-  var streamqueue = require('streamqueue');
+  var eventStream = require('event-stream');
   var Q = require('Q');
 
   var jsFilter     = plugins.filter('**/*.js'),
@@ -82,8 +82,7 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
         .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/libjs'))));
 
-      streamqueue({objectMode: true}, libCssStream, assetsStream, libJsStream)
-        .pipe(plugins.connect.reload());
+      eventStream.merge(libCssStream, assetsStream, libJsStream);
 
       deferred.resolve();
     });

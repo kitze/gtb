@@ -5,11 +5,10 @@ module.exports = function (gulp, plugins, config) {
   var fileDir = require('../../functions/file-dir')(config);
   var con = require('../../functions/console');
   var handleError = require('../../functions/handle-error');
-  var streamqueue = require('streamqueue');
+  var eventStream = require('event-stream');
 
   return function () {
     con.hint("Processing javascript ... ");
-
 
     /* In the replacements array you can add any key:value that later will be replaced in every of the html and js files
      * So for example if your app needs access to the port the app is running on and you have the port define in your gulpfile you can access
@@ -30,7 +29,8 @@ module.exports = function (gulp, plugins, config) {
     var jsStream = gulp.src(fileDir('js', 'js')); // add .js file to current event stream
 
     /* Merge both js/coffeescript streams before continuing the task */
-    return streamqueue({objectMode: true}, coffeeScriptStream, jsStream)
+    return eventStream.merge(coffeeScriptStream, jsStream)
+      .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.concat('app.js')) //concatenate them into an app.js file
       .pipe(plugins.babel()) // transpile es6 code to es5
       .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
@@ -39,7 +39,6 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.if(global.isProduction, plugins.rev()))
       .pipe(gulp.dest(bdir(config.dirs.js))) //place the app.js file into the build folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-      .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/appjs'))))
-      .pipe(plugins.connect.reload()); // refresh the browser
+      .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/appjs'))));
   }
 };
