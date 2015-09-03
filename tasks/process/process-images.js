@@ -9,11 +9,11 @@ module.exports = function (gulp, plugins, config) {
     con.hint('Processing images ...');
 
     return gulp.src(fileDir('*', 'images'))
-      .pipe(plugins.imagemin({
+      .pipe(plugins.if(global.isProduction, plugins.imagemin({
         progressive: true,
         use: [pngquant()],
         verbose: undefined
-      }))
+      })))
       .pipe(gulp.dest(bdir(config.dirs.images)));
   }
 };
