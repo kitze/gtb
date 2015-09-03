@@ -1,5 +1,6 @@
 module.exports = function (gulp, plugins, config) {
 
+  var browserSync = require('../../classes/browser-sync');
   var getAllBowerFiles = require('../../functions/get-all-bower-files')(gulp, plugins, config);
   var getAdditionalFonts = require('../../functions/get-additional-fonts')(gulp, plugins, config);
   var _ = require('underscore');

@@ -1,15 +1,16 @@
-module.exports = function (config) {
+module.exports = function () {
+  var directories = require('../config/directories-config');
   var _ = require('underscore');
-  var dir = require('../functions/dir')(config);
+  var dir = require('../functions/dir')();
 
   function fd(fileType, directory, deep) {
     var arr = [];
     if (typeof fileType === 'string' && (!directory || typeof directory === 'string')) {
-      var d = directory===''?'':config.dirs[directory ? directory : fileType];
-      d = d!==''?(d+'/'):'';
-      arr = [dir(d+ '*.' + fileType)];
+      var d = directory === '' ? '' : directories[directory ? directory : fileType];
+      d = d !== '' ? (d + '/') : '';
+      arr = [dir(d + '*.' + fileType)];
       if (deep !== false) {
-        arr.push(dir(d+'**/*.' + fileType));
+        arr.push(dir(d + '**/*.' + fileType));
       }
     }
     else if (typeof fileType === 'object' && (!directory || typeof directory === 'string')) {

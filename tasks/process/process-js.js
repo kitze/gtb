@@ -1,5 +1,6 @@
 module.exports = function (gulp, plugins, config) {
 
+  var browserSync = require('../../classes/browser-sync');
   var dir = require('../../functions/dir')(config);
   var bdir = require('../../functions/build-dir')(config);
   var fileDir = require('../../functions/file-dir')(config);
@@ -29,7 +30,7 @@ module.exports = function (gulp, plugins, config) {
     var jsStream = gulp.src(fileDir('js', 'js')); // add .js file to current event stream
 
     /* Merge both js/coffeescript streams before continuing the task */
-    return eventStream.merge(coffeeScriptStream, jsStream)
+    var es =  eventStream.merge(coffeeScriptStream, jsStream)
       .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.concat('app.js')) //concatenate them into an app.js file
       .pipe(plugins.babel()) // transpile es6 code to es5
@@ -40,5 +41,10 @@ module.exports = function (gulp, plugins, config) {
       .pipe(gulp.dest(bdir(config.dirs.js))) //place the app.js file into the build folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
       .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/appjs'))));
+
+    es.on('end', function () {
+      browserSync.server.reload();
+    });
+    return es;
   }
 };

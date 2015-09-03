@@ -1,5 +1,7 @@
-module.exports = function (config) {
+module.exports = function () {
+  var directories = require('../config/directories-config');
+
   return function (folder){
-    return global.prefix + config.dirs.app + "/" + folder;
+    return global.prefix + directories.app + "/" + folder;
   }
 };

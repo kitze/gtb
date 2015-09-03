@@ -1,20 +1,13 @@
 module.exports = function (gulp, plugins, config) {
 
+  var browserSync = require('../../classes/browser-sync');
   var dir = require('../../functions/dir')(config);
   var bdir = require('../../functions/build-dir')(config);
   var fileDir = require('../../functions/file-dir')(config);
   var con = require('../../functions/console');
   var handleError = require('../../functions/handle-error');
   var eventStream = require('event-stream');
-
-  var minifyHtmlOptions = {
-    comments: false,
-    quotes: true,
-    spare: true,
-    empty: true,
-    cdata: true,
-    loose: true
-  };
+  var minifyHtmlOptions = require('../../config/html-minify-config');
 
   return function () {
     con.hint('Processing html ...');
@@ -37,7 +30,7 @@ module.exports = function (gulp, plugins, config) {
     var htmlStream = gulp.src(fileDir('html', ''));
 
     /* Merge jade/html streams before proceeding with the task */
-    return eventStream.merge(jadeStream, htmlStream)
+    var es = eventStream.merge(jadeStream, htmlStream)
       .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions))) // if running task in production mode minify html
       .pipe(filters.excludePartials)
       .pipe(gulp.dest(bdir(config.dirs.root))) // place the processed .html files accordingly in the folders they belong to
@@ -52,6 +45,12 @@ module.exports = function (gulp, plugins, config) {
       .pipe(gulp.dest(bdir(config.dirs.js)))
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
       .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/templates'))));
+
+    es.on('end', function () {
+      browserSync.server.reload();
+    });
+
+    return es;
 
   }
 };

@@ -1,29 +1,26 @@
-var runSequence = require('run-sequence');
-var browserSync = require('../classes/browser-sync');
-
 module.exports = function (gulp, plugins, config) {
-  var fileDir = require('../functions/file-dir')(config);
-  var dir = require('../functions/dir')(config);
+  var fileDir = require('../functions/file-dir')();
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../functions/console');
 
+  var processes = {
+    css: require('../tasks/process/process-css')(gulp, plugins, config),
+    js: require('../tasks/process/process-js')(gulp, plugins, config),
+    html: require('../tasks/process/process-html')(gulp, plugins, config)
+  };
 
   function watcher(fileTypes, directory, process) {
-    plugins.watch(fileDir(fileTypes, directory), function () {
-      con.hint(process + " file changed ... ");
-      runSequence('process:' + process, function () {
-        if(process!=='css') { //for css the file is streamed directly to the browser
-          browserSync.server.reload();
-        }
-      });
+    var fd = fileDir(fileTypes, directory);
+    plugins.watch(fd, function () {
+      process();
     });
   }
 
   return function () {
     con.hint('Watching files for changes ...');
 
-    watcher(['html', 'jade'], 'root', 'html');
-    watcher(['scss', 'sass', 'css'], 'css', 'css');
-    watcher(['coffee', 'js'], 'js', 'js');
+    watcher(['html', 'jade'], 'root', processes.html);
+    watcher(['scss', 'sass', 'css'], 'css', processes.css);
+    watcher(['coffee', 'js'], 'js', processes.js);
   }
 };
