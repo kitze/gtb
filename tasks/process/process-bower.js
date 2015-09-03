@@ -26,7 +26,7 @@ module.exports = function (gulp, plugins, config) {
 
   return function () {
     var deferred = Q.defer();
-    con.hint('Processing bower ... ');
+    con.hint('Processing bower ...');
 
     getAllBowerFiles().then(function (bowerFiles) {
 

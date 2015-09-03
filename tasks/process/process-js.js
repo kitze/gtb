@@ -8,7 +8,7 @@ module.exports = function (gulp, plugins, config) {
   var eventStream = require('event-stream');
 
   return function () {
-    con.hint("Processing javascript ... ");
+    con.hint("Processing javascript ...");
 
     /* In the replacements array you can add any key:value that later will be replaced in every of the html and js files
      * So for example if your app needs access to the port the app is running on and you have the port define in your gulpfile you can access

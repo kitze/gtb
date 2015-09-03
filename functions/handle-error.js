@@ -5,7 +5,8 @@ var chalk = require('chalk');
 module.exports = function (err) {
   var file = err.file || err.filename || err.path;
 
-  notifier.notify({ // show a system notification when there's an error in a sass file
+  // show a system notification when there's an error in a sass file
+  notifier.notify({
     'title': 'Error',
     'message': err.message + " at " + file
   });
