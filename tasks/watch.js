@@ -1,5 +1,5 @@
 module.exports = function (gulp, plugins, config) {
-  var fileDir = require('../functions/file-dir')();
+  var getDir = require('../functions/get-dir');
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../functions/console');
 
@@ -10,8 +10,7 @@ module.exports = function (gulp, plugins, config) {
   };
 
   function watcher(fileTypes, directory, process) {
-    var fd = fileDir(fileTypes, directory);
-    plugins.watch(fd, function () {
+    plugins.watch(getDir.files(fileTypes, directory), function () {
       process();
     });
   }

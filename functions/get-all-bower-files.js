@@ -5,6 +5,8 @@ module.exports = function (gulp, plugins, config) {
   var con = require('../functions/console');
   var $q = require('deferred');
   var bowerSettings = require('../config/bower-config');
+  var directories = require('../config/directories-config');
+
   require('shelljs/global');
 
   return function () {
@@ -15,7 +17,7 @@ module.exports = function (gulp, plugins, config) {
       exit(-1);
     }
 
-    var bowerDirectoryPath = global.prefix + config.dirs.bower;
+    var bowerDirectoryPath = global.prefix + directories.bower;
 
     try {
       fs.lstatSync(bowerDirectoryPath);

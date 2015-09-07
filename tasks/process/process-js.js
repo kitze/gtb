@@ -1,12 +1,11 @@
 module.exports = function (gulp, plugins, config) {
 
   var browserSync = require('../../classes/browser-sync');
-  var dir = require('../../functions/dir')(config);
-  var bdir = require('../../functions/build-dir')(config);
-  var fileDir = require('../../functions/file-dir')(config);
+  var getDir = require('../../functions/get-dir');
   var con = require('../../functions/console');
   var handleError = require('../../functions/handle-error');
   var eventStream = require('event-stream');
+  var directories = require('../../config/directories-config');
 
   return function () {
     con.hint("Processing javascript ...");
@@ -20,14 +19,14 @@ module.exports = function (gulp, plugins, config) {
     ];
 
     /* Process coffeescript to javascript */
-    var coffeeScriptStream = gulp.src(fileDir("coffee", "js")) //find all the .coffee files in the project /js folder
+    var coffeeScriptStream = gulp.src(getDir.files("coffee", "js")) //find all the .coffee files in the project /js folder
       .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.coffee({ // compile coffeescript to javascript files
         bare: false
       }));
 
     /* Save stream of js files */
-    var jsStream = gulp.src(fileDir('js', 'js')); // add .js file to current event stream
+    var jsStream = gulp.src(getDir.files('js', 'js')); // add .js file to current event stream
 
     /* Merge both js/coffeescript streams before continuing the task */
     var es =  eventStream.merge(coffeeScriptStream, jsStream)
@@ -38,9 +37,9 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.batchReplace(replacements))// find and replace strings from config.replacements and from project config file
       .pipe(plugins.if(global.isProduction, plugins.uglify())) // if in production mode uglify/minify app.js
       .pipe(plugins.if(global.isProduction, plugins.rev()))
-      .pipe(gulp.dest(bdir(config.dirs.js))) //place the app.js file into the build folder of the project
+      .pipe(gulp.dest(getDir.build(directories.js))) //place the app.js file into the build folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-      .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/appjs'))));
+      .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/appjs'))));
 
     es.on('end', function () {
       browserSync.server.reload();

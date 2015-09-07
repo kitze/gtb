@@ -1,17 +1,16 @@
 module.exports = function (gulp, plugins, config) {
 
-  var browserSync = require('../../classes/browser-sync');
   var getAllBowerFiles = require('../../functions/get-all-bower-files')(gulp, plugins, config);
   var getAdditionalFonts = require('../../functions/get-additional-fonts')(gulp, plugins, config);
   var _ = require('underscore');
   var map = require('map-stream');
   var path = require('path');
-  var bdir = require('../../functions/build-dir')(config);
-  var dir = require('../../functions/dir')(config);
+  var getDir = require('../../functions/get-dir');
   var notifier = require('gulp-notify/node_modules/node-notifier');
   var con = require('../../functions/console');
   var eventStream = require('event-stream');
   var Q = require('Q');
+  var directories = require('../../config/directories-config');
 
   var jsFilter     = plugins.filter('**/*.js'),
       cssFilter    = plugins.filter(['*.css', '**/*.css']),
@@ -34,19 +33,19 @@ module.exports = function (gulp, plugins, config) {
       additionalFonts = getAdditionalFonts(bowerFiles);
 
       var fontsFromBower = _.map(additionalFonts, function (fontLibrary) {
-        return global.prefix + config.dirs.bower + "/" + fontLibrary.name + "/" + fontLibrary.directory + "/" + "*";
+        return global.prefix + directories.bower + "/" + fontLibrary.name + "/" + fontLibrary.directory + "/" + "*";
       });
 
       if (fontsFromBower.length > 0) {
         gulp.src(fontsFromBower)
-          .pipe(gulp.dest(bdir(config.dirs.fonts)));
+          .pipe(gulp.dest(getDir.build(directories.fonts)));
       }
 
       /* Get CSS files from bower directory */
       var libCssStream = gulp.src(bowerFiles)
         .pipe(cssFilter)
         .pipe(map(function (file, callback) {
-          var relativePath = path.dirname(path.relative(path.resolve(config.dirs.js), file.path));
+          var relativePath = path.dirname(path.relative(path.resolve(directories.js), file.path));
           var contents = file.contents.toString().replace(/url\([^)]*\)/g, function (match) {
             // find the url path, ignore quotes in url string
             var matches = /url\s*\(\s*(('([^']*)')|("([^"]*)")|([^'"]*))\s*\)/.exec(match),
@@ -54,7 +53,7 @@ module.exports = function (gulp, plugins, config) {
             // Don't modify data, http(s) and protocol agnostic urls
             if (/^data:/.test(url) || /^http(:?s)?:/.test(url) || /^\/\//.test(url) || keepOriginal(url))
               return 'url(' + url + ')';
-            return 'url(' + path.join(path.relative(config.dirs.js, config.dirs.app), config.dirs.js, relativePath, url) + ')';
+            return 'url(' + path.join(path.relative(directories.js, directories.app), directories.js, relativePath, url) + ')';
           });
           file.contents = new Buffer(contents);
           callback(null, file);
@@ -62,14 +61,14 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.concat('lib.css'))
         .pipe(plugins.if(global.isProduction, plugins.rev()))
         .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'})))
-        .pipe(gulp.dest(bdir(config.dirs.css)))
+        .pipe(gulp.dest(getDir.build(directories.css)))
         .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-        .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/libcss'))))
+        .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/libcss'))))
         .pipe(cssFilter.restore());
 
       var assetsStream = gulp.src(bowerFiles)
         .pipe(assetsFilter)
-        .pipe(gulp.dest(bdir(config.dirs.js)))
+        .pipe(gulp.dest(getDir.build(directories.js)))
         .pipe(assetsFilter.restore());
 
       /* Get JS files from bower directory */
@@ -79,9 +78,9 @@ module.exports = function (gulp, plugins, config) {
         .pipe(plugins.ngAnnotate()) // annotate them in case we're using angular
         .pipe(plugins.if(global.isProduction, plugins.uglify()))
         .pipe(plugins.if(global.isProduction, plugins.rev()))
-        .pipe(gulp.dest(bdir(config.dirs.js)))
+        .pipe(gulp.dest(getDir.build(directories.js)))
         .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-        .pipe(plugins.if(global.isProduction, gulp.dest(bdir('rev/libjs'))));
+        .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/libjs'))));
 
       eventStream.merge(libCssStream, assetsStream, libJsStream);
 

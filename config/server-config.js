@@ -12,19 +12,19 @@ module.exports = function () {
     },
     ui: false,
     notify: false,
-    port: gulpConfig.serverPort,
+    port: gulpConfig.server.port,
     ghostMode: {
-      clicks: gulpConfig.syncClicks,
-      forms: gulpConfig.syncForms,
-      scroll: gulpConfig.syncScroll
+      clicks: gulpConfig.server.syncClicks,
+      forms: gulpConfig.server.syncForms,
+      scroll: gulpConfig.server.syncScroll
     },
     open: false
   };
 
-  if (gulpConfig.openAfterLaunch === true) {
+  if (gulpConfig.server.openAfterLaunch === true) {
     serverConfig = _.extend(serverConfig, {
-      open: gulpConfig.openAfterLaunch,
-      browser: gulpConfig.openInBrowsers
+      open: gulpConfig.server.openAfterLaunch,
+      browser: gulpConfig.server.openInBrowsers
     });
   }
 

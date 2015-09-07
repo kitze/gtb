@@ -13,7 +13,7 @@ module.exports = function () {
     fs.writeFileSync(files.GIT_IGNORE, _(items).compact().join(os.EOL), 'utf8');
   }
 
-  if (gulpConfig.modifyGitignore === true) {
+  if (gulpConfig.gtb.modifyGitignore === true) {
     // if .gitignore doesn't exist for the project create it and fill it with predefined template
     if (!fileExists(files.GIT_IGNORE)) {
       con.hint('Creating .gitignore');

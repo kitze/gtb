@@ -1,7 +1,6 @@
 var gulp                 = require('gulp'),
     _                    = require('underscore'),
     args                 = require('yargs').argv,
-    bdir                 = require('../functions/build-dir'),
     con                  = require('../functions/console'),
     fixGitIgnore         = require('../functions/fix-git-ignore'),
     writeGulpConfigFiles = require('../functions/write-gulp-config-files'),
@@ -11,7 +10,7 @@ var gulp                 = require('gulp'),
 
 module.exports = function () {
 
-  // Write gulp config files 
+  // Write gulp config files
   writeGulpConfigFiles();
 
   // Fix .gitignore
@@ -41,19 +40,16 @@ module.exports = function () {
   /*  ================== Add tasks from folders ================== */
 
   addTaskFolder('process', ['html', 'css', 'js', 'bower', 'fonts', 'images']);
-  addTaskFolder('clean', ['build', 'zip', 'rev']);
+  addTaskFolder('clean', ['build', 'rev']);
   addTaskFolder('build', ['only', 'serve']);
   addTaskFolder('copy', ['build', 'json']);
 
   /*  ================== Tasks ================== */
 
-  // Run server that will serve index.html and the assets 
+  // Run server that will serve index.html and the assets
   addTask('server');
 
-  // Build the app and put the 'build' folder in a zip file 
-  addTask('zip');
-
-  // Watch the directories for changes and reload the page, or if a scss/css file is changed inject it automatically without refreshing 
+  // Watch the directories for changes and reload the page, or if a scss/css file is changed inject it automatically without refreshing
   addTask('watch');
 
   // Replaces filenames in index.html with the new ones that the rev task produced

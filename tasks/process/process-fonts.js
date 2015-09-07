@@ -1,19 +1,18 @@
-module.exports = function (gulp, plugins, config) {
+module.exports = function (gulp) {
 
-  var fileDir = require('../../functions/file-dir')(config);
-  var bdir = require('../../functions/build-dir')(config);
-  var dir = require('../../functions/dir')(config);
+  var getDir = require('../../functions/get-dir');
   var con = require('../../functions/console');
   var merge = require('merge-stream');
+  var directories = require('../../config/directories-config');
 
   return function () {
     con.hint("Processing fonts ...");
 
-    var font = gulp.src(fileDir('*', 'font'))
-      .pipe(gulp.dest(bdir(config.dirs.font)));
+    var font = gulp.src(getDir.files('*', 'font'))
+      .pipe(gulp.dest(getDir.build(directories.font)));
 
-    var fonts = gulp.src(fileDir('*', 'fonts'))
-      .pipe(gulp.dest(bdir(config.dirs.fonts)));
+    var fonts = gulp.src(getDir.files('*', 'fonts'))
+      .pipe(gulp.dest(getDir.build(directories.fonts)));
 
     return merge(font, fonts);
 
