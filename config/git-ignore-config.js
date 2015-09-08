@@ -1,8 +1,11 @@
+var projectConfig = require('../functions/gulp-config').projectConfig;
+var filesConfig = require('../config/files-config');
+
 module.exports = [
-  'build/',
-  'bower_components/',
+  projectConfig.directories.build + '/',
+  projectConfig.directories.bower + '/',
+  filesConfig.CUSTOM_CONFIG,
   '.idea/',
-  'custom-gulp-config.json',
   '.DS_STORE',
   'npm-debug.log'
 ];

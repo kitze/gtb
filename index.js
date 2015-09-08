@@ -2,14 +2,17 @@
 /* global shell */
 require('shelljs/global');
 /* dependencies */
-var fs          = require('fs'),
-    _           = require('underscore'),
-    args        = require('yargs').argv,
-    runSequence = require('run-sequence'),
-    inq         = require('inquirer'),
-    chalk       = require('chalk'),
-    figlet      = require('figlet'),
-    con         = require('./functions/console');
+var fs                   = require('fs'),
+    _                    = require('underscore'),
+    args                 = require('yargs').argv,
+    runSequence          = require('run-sequence'),
+    inq                  = require('inquirer'),
+    chalk                = require('chalk'),
+    figlet               = require('figlet'),
+    con                  = require('./functions/console'),
+    writeGulpConfigFiles = require('./functions/write-gulp-config-files'),
+    writeBowerConfig     = require('./functions/write-bower-config'),
+    fixGitIgnore         = require('./functions/fix-git-ignore');
 
 /* If you add this repository as a submodule of any other app it will live in a folder inside of that app. So that's why the default
  * prefix is ".." and it's telling the gulp tasks where to look for your files (in this case, one folder backwards).
@@ -259,7 +262,9 @@ function runProject(project) {
   con.hint('Running project "' + project.name + '"...');
   global.prefix = project.location;
   con.log(global.prefix);
-  var tasks = require('./tasks/all-gulp-tasks');
-  tasks();
+  writeGulpConfigFiles();
+  writeBowerConfig();
+  fixGitIgnore();
+  require('./tasks/all-gulp-tasks')();
   runSequence(args.c ? args.c : 'default');
 }

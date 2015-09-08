@@ -1,34 +1,19 @@
 var gulp                 = require('gulp'),
     _                    = require('underscore'),
-    args                 = require('yargs').argv,
     con                  = require('../functions/console'),
-    fixGitIgnore         = require('../functions/fix-git-ignore'),
-    writeGulpConfigFiles = require('../functions/write-gulp-config-files'),
     files                = require('../config/files-config'),
     plugins              = require('gulp-load-plugins')({config: files.PACKAGE_JSON}),
     directories          = require('../config/directories-config');
 
 module.exports = function () {
 
-  // Write gulp config files
-  writeGulpConfigFiles();
-
-  // Fix .gitignore
-  fixGitIgnore();
-
-  var tasksConfig = {
-    gulp: require('../functions/gulp-config')(),
-    dirs: directories,
-    args: args
-  };
-
-  /* Each of the gulp tasks that are in a separate file needs access to
-   * the variables "gulp", "plugins" and "tasksConfig", so when a task is required
+  /* Each of the gulp tasks that are in a separate file needs access to "gulp" and "plugins",
+   * so when a task is required
    * those 3 variables are supplied as arguments
    * */
 
   function addTask(taskName, taskPath) {
-    gulp.task(taskName, require(files.GULP_TASKS + (taskPath ? taskPath : taskName))(gulp, plugins, tasksConfig));
+    gulp.task(taskName, require(files.GULP_TASKS + (taskPath ? taskPath : taskName))(gulp, plugins));
   }
 
   function addTaskFolder(folder, tasksArray) {

@@ -25,7 +25,7 @@ module.exports = function (gulp, plugins, config) {
     }
     catch (e) {
       con.err('Bower components directory doesn\'t exist');
-      con.err('Please run bower-install in your directory before you run gtb again.');
+      con.err('Please run `bower install` in your project directory before you run gtb again.');
       exit(-1);
     }
 

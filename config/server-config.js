@@ -1,9 +1,10 @@
 var historyApiFallback = require('connect-history-api-fallback'),
     directories        = require('../config/directories-config'),
-    gulpConfig         = require('../functions/gulp-config')(),
     _                  = require('underscore');
 
 module.exports = function () {
+
+  var gulpConfig = require('../functions/gulp-config').userConfig;
 
   var serverConfig = {
     server: {

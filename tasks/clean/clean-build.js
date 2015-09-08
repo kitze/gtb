@@ -3,6 +3,6 @@ module.exports = function () {
   var del = require('del');
 
   return function () {
-    return del.sync(getDir.build(''), {force: true});
+    return del.sync(getDir.build(), {force: true});
   }
 };

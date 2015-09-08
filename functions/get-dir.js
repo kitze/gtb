@@ -2,6 +2,7 @@ var directories = require('../config/directories-config');
 var _ = require('underscore');
 
 var build = function build(folderName) {
+  folderName = folderName || '';
   return global.prefix + directories.build + "/" + folderName;
 };
 

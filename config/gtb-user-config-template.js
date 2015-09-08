@@ -1,4 +1,8 @@
 module.exports = {
+  gtb: {
+    'modifyGitignore': true,
+    'copyToFolder': 'copy'
+  },
   server: {
     'port': 9000,
     'openAfterLaunch': true,
@@ -7,12 +11,5 @@ module.exports = {
     'syncClicks': true,
     'syncForms': true,
     'syncScroll': true
-  },
-  gtb: {
-    'modifyGitignore': true,
-    'copyToFolder': 'copy'
-  },
-  directories: {
-    'images': 'img'
   }
 };

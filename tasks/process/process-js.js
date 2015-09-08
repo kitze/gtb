@@ -6,6 +6,7 @@ module.exports = function (gulp, plugins, config) {
   var handleError = require('../../functions/handle-error');
   var eventStream = require('event-stream');
   var directories = require('../../config/directories-config');
+  var gulpConfig = require('../../functions/gulp-config').userConfig;
 
   return function () {
     con.hint("Processing javascript ...");
@@ -15,7 +16,7 @@ module.exports = function (gulp, plugins, config) {
      * it easily from your html/js.
      */
     var replacements = [
-      ['G_SERVER_PORT', config.serverPort]
+      ['G_SERVER_PORT', gulpConfig.server.port]
     ];
 
     /* Process coffeescript to javascript */
@@ -29,7 +30,7 @@ module.exports = function (gulp, plugins, config) {
     var jsStream = gulp.src(getDir.files('js', 'js')); // add .js file to current event stream
 
     /* Merge both js/coffeescript streams before continuing the task */
-    var es =  eventStream.merge(coffeeScriptStream, jsStream)
+    var es = eventStream.merge(coffeeScriptStream, jsStream)
       .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.concat('app.js')) //concatenate them into an app.js file
       .pipe(plugins.babel()) // transpile es6 code to es5

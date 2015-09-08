@@ -41,7 +41,7 @@ module.exports = function (gulp, plugins, config) {
           .pipe(gulp.dest(getDir.build(directories.fonts)));
       }
 
-      /* Get CSS files from bower directory */
+      // Get CSS files from bower directory
       var libCssStream = gulp.src(bowerFiles)
         .pipe(cssFilter)
         .pipe(map(function (file, callback) {
