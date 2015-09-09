@@ -12,6 +12,11 @@ module.exports = function () {
       name: "fontawesome",
       directory: "fonts",
       escapeUrl: /fontawesome/
+    },
+    ionicons: {
+      name: "ionic",
+      directory: "release/fonts",
+      escapeUrl: /ionicons/
     }
   };
 
