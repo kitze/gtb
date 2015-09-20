@@ -1,5 +1,7 @@
 # GTB (Gulp The Builder)
 
+[![Join the chat at https://gitter.im/kitze/gtb](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kitze/gtb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Use gulp without the hassle of actually learning and writing gulp.
 
 What is it?
