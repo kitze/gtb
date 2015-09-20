@@ -1,78 +1,119 @@
 # GTB (Gulp The Builder)
+![Total downloads](https://img.shields.io/npm/dt/gtb.svg)
+![NPM version](https://img.shields.io/npm/v/gtb.svg)
+![Licence](https://img.shields.io/npm/l/gtb.svg)
+![Dependencies](https://img.shields.io/david/kitze/gtb.svg)
+[![Gitter](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/kitze/gtb)
 
-Use gulp without the hassle of actually learning and writing gulp.
+Run your frontend projects without the hassle of actually writing gulp or grunt tasks.
 
 What is it?
 -------
-**GTB** is a npm module which with the help of gulp and node.js can help you make your front-end development blazing fast, no matter what frameworks, libraries or languages you use.
+**GTB** is a node.js module which can manage, compile, minify, serve and watch your front-end projects, no matter what frameworks, libraries or languages you use.
+
+![gtbscreencast](http://g.recordit.co/8seRmexDoD.gif)
 
 What does GTB do?
 -------
 
- 1. **Watch**: watches your project directory for changes and acts accordingly depending on what you've changed
- 2. **LiveReload**: if you make a change in a ```.js, .html, .jade, .json, .coffee``` file it will automatically refresh your browser when you save
- 3. **Auto-inject changed CSS in the browser**: if you make a change in a ```.css, .scss, .sass``` file it will automatically inject the changes in the browser so you don't even have to do a full page reload. If you're viewing your application on multiple browsers you will see the changes reflect
+ 1. **Watch**: watches your project directory for changes and acts accordingly depending on what you've changed.
+ 2. **LiveReload**: if you add, delete or make a change in any file the  browser will be automatically refreshed.
+ 3. **Auto-inject changed CSS in the browser**: If you make a change in a ```.css, .scss, .sass``` file it will automatically inject the changes in the browser so you don't even have to do a full page reload. If you're viewing your application on multiple browsers you will see the changes reflect immediately.
 This may especially come in handy when you're writing/debugging css for a part of your application that isn't visible or reachable at a first glance. For example if you're debugging a dialog that can only be shown with doing few clicks, or a section that's far down your page. 
 A full page refresh will throw you off track every time you make a change, but when your css is auto-injected you will see the changes instantly no matter which part of your site your editing.
- 4. **Compile SASS**: Compiles sass/scss, suports **sass globbing** so you can import whole folders (not default feature of sass) so for example you can write ```@import "sections/*";``` and have your whole folder imported.
- 5. **Compile Jade/Coffeescript**: Compiles .jade to .html and .coffee to .js
- 6. **Autoprefix CSS**: It makes your css development a little bit easier so you don't have to put all the browser prefixes by yourself. They'll be automatically added so when you write ``` display:flex ``` it will add the ```-webkit and -ms-``` prefixes automatically.
+ 4. **Compile SASS**: Compiles sass/scss, suports **sass globbing** so you can import whole folders (not a default feature of sass) so for example you can write ```@import "sections/*";``` and have your whole folder imported.
+ 5. **Compile Jade/Coffeescript**: Compiles jade files to html and coffeescript files to .js
+ 6. **Autoprefix CSS**: It makes your CSS development a little bit easier so you don't have to put all the browser prefixes by yourself. They'll be automatically added so when you write ``` display:flex ``` it will add the ```-webkit and -ms-``` prefixes automatically.
  7. **Image Minification**: Your png and jpg images are going to get optimizied and minified by imagemin automatically.
- 8. **Concatenate, Minify & Annotate JS**: Your js files will be joined in one ``` app.js ``` file, no matter how much files you have in your js folder. If you're using angular your code will be automatically annotated so you don't [have to write your dependencies as strings](https://docs.angularjs.org/tutorial/step_05). If you're building the app in production mode  the code will be uglified (minified).
- 9. **Notifications on compile errors**. If you have an error in a sass/jade/coffeescript file you don't have to open the terminal everytime to check what the error was. You will get a native Linux/Windows/OS X notification with the error so you can start fixing it immediately.
+ 8. **Convert ES6, concatenate, mnify & annotate**: Your .js files will be concatenated in one ``` app.js ``` file. If you're using angular your code will be automatically annotated so you don't [have to write your dependencies as strings](https://docs.angularjs.org/tutorial/step_05). ES6 syntax will be converted to ES5 with babel. If you're building the app in production mode the code will be uglified (minified). 
+ 9. **Notifications on compliation errors**. If you have an error in a sass/jade/coffeescript file you don't have to open the terminal everytime to check what the error was. You will get a native Linux/Windows/OS X notification with the error so you can start fixing it immediately.
  10. **Include bower dependencies**: If you have some bower dependencies installed it will find their main files and include them in their final build, no matter if they're css or js. So for example if in your project directory you run ```bower install angular jquery --save ``` the angular and jquery main files would end up in your lib.js library. And if you ``` bower install normalize.css --save ``` the normalize.css will end up in your lib.css file. 
- 11. **Custom bower logic**: If you install a bower dependency that includes many files by default and you just want to include one or few files from the whole library you can use some custom logic in your ```gulp-config.json``` file that will be generated inside your project. So if i have installed ```ngDialog``` with bower and i just want to include the js file without the themes, i can have this logic in my ```gulp-config.json```.
- 12. **Watch bower.json for changes**: If you modify your bower.json file while gtb's watcher is running the dependencies you've added/deleted will be automatically added/deleted from your ```bower_components``` folder. Same logic goes if you pull a change from github and some of your collaborators added a new library in the bower.json it will be automatically be installed and you will get a notification.
- 13. **Include library fonts**: Let's say you have **bootstrap** or **fontawesome** installed as a bower dependencies. GTB will take the fonts out of the library and copy them in your build folder and it will also modify their css files to link to the fonts properly. So you don't need to bother  to manually  copy or include the fonts.
- 14. **Run a server**: Your app (actually the final build folder) will be ran on a server ```http://localhost:9000``` (9000 is default you can change the port for every project). 
- This has few benefits. The first one is that you open http://localhost:9000 on multiple devices on your home network and debug the changes on a pc, laptop, tablet and phone simultaneously.
- The second one is if you're creating an angular app, by default you cannot just open index.html in your browser because you will get a cross origin request error when angular tries to load the templates and other files it needs from your local machine. Also you cannot use html5 routes (without hashbang #) When the app is run with a server the requests and the html5 mode are not a problem anymore.
- 15. **History API Fallback**: The connect server has the [historyApiFallback](https://github.com/bripkens/connect-history-api-fallback) plugin as a middleware. So if you're using angular and you want to use ```  $locationProvider.html5Mode(true);``` so your app can run without a hashbang in the url then you'll have a problem because if you have a route called http://my.app/#!/users it will work but if the route is http://my.app/users it won't work and the browser will throw an error that the route is not found. The history api fallback plugin can proxy requests through a specified index page, so no matter which url you're accessing the index.html page can be served, which is the only way to debug angular apps in html5 mode.
- 16. **Zip the build**: With the zip command you can easily archive a production version of your project in a zipfile with an added timestamp in the filename so you can send the zip version to someone in few seconds. You can have as many zip files, they will be generated in the zip folder.
+ 11. **Include library fonts**: Let's say you have **bootstrap** or **fontawesome** installed as a bower dependencies. GTB will take the fonts out of the library and copy them in your build folder and it will also modify their css files to link to the fonts properly. So you don't need to bother to manually copy or include the fonts from popular libraries.
+ 12. **Run a server**: Your app will be served by default on ```http://localhost:9000```
+ This has few benefits. The first one is that you can open the url on multiple devices on your network and debug the changes on a pc, laptop, tablet and phone simultaneously.
+ The second benefit is that you can use configure the router of your app to use HTML5 mode (urls without hashbangs #) without a problem. 
+ 
+How projects are stored
+-------
 
+ - GTB stores the names and directories of your projects in a **projects.json** file in your home directory. So if you want to manually edit it on 
+ you can go to:
+ - ```/home/YourUsername/projects.json``` (Linux)
+ - ```/Users/YourUsername/projects.json``` (OS X)
+ - ```C:\Users\YourUsername\projects.json``` (Windows)
  
 Files that GTB adds to your project
 -------
-
- - GTB stores the names and directories of your project in a **projects.json** file in your home directory. So if you want to manually edit it on 
- Linux/OS X you can go to
- ```/home/username/projects.json```
- or in Windows
-  ```C:\Users\Username\projects.json``` 
- - GTB generates a **gulp-config.json** file for your project so inside of it you can specify the ```additionalBowerFiles```, ```ignoredFiles``` or all the settings that you want to set on a project level. If you use a revision control system like git or svn and add that file then the same config will be used by all of the contributors to the project.
- - GTB also generates a **custom-gulp-config.json** that in the beginning is a simple copy of **gulp-config.json** and it will override every setting from **gulp-config.json** So for example if on a project level the ```livereload``` setting is set to ```true``` but for some weird reason you hate livereload and want to disable it on your pc then you can edit the setting in the **custom-gulp.json**. If you use git or svn that file won't be added to the repository.
+ - **gtb-project-config.json** This file contains the directory configuration of your project. You can specify the names of your js, css, fonts, template, bower and other folders so GTB can know where to look for them. This file should be added to subversion (git or svn) so every repository member can have the directory structure for the project when they run it with GTB on their machine.
+ -  **gtb-user-config.json** It's reccomended that this file isn't added to git so every repository member can have his own configuration on his machine because this file contains options that are not tied to the project, but they're more like user preferences. This file contains the following options:
+	 -  ```modifyGitignore```*(boolean)*: Should GTB go through the project's ```.gitignore``` file and make sure that folders like ```bower_components``` and the build folder of the project are ignored so they're not commited to git.
+	 -  ```copyToFolder```*(string)*: The path to which you want your files to be copied in the ```build:copy``` task. 
+	 -  ```port``` *(int)*: The port on which the server should serve the project (default is 9000)
+	 -  ```openAfterLaunch```*(boolean)*: Should the http://localhost:port url be opened immediately after GTB starts a project
+	 -  ```liveReload```*(boolean)*: Should the browser be automatically refreshed on every change
+	 -  ```syncClicks```*(boolean)*: If the development url is opened on multiple devices should the clicks on links, buttons, etc. be synced between every device
+	 -  ```syncForms``` *(boolean)*: Should the content of the forms be synced on every device. This is useful for testing on multiple devices at once so the form filling is synced.
+	 -  ```syncScroll``` *(boolean)*: Should scrolling be synced between multiple devices
 
 How to install?
 -------
-First, you have to have [node.js](https://nodejs.org/) on your machine.
-Then make sure you have bower installed as a global npm module:
- ```npm install bower -g``` 
-Then just install gtb as a global npm module:
- ``` npm install gtb -g ```.
+- First, you have to install [node.js](https://nodejs.org/) on your machine.
+- Then make sure you have bower installed globally: ```npm install bower -g``` 
+- Then install gtb globally: ``` npm install gtb -g ```.
+
+Getting started with your first project
+-------
+The default folder names are: css, js, fonts, templates, bower_components and img. Those folders should be inside a parent folder called ```app```.
+Let's say that you're building an awesome app called ```cat-facts-generator```. 
+Your project structure should look like this:  
+
+```
+/cat-facts-generator
+	--- /app
+	 	---	/js
+	   	---	/css
+	   	---	/img
+	   	---	/fonts
+	   	---	/templates
+	---	/bower_copmonents
+	--- .gitignore
+	--- bower.json
+   		
+```
+*(please note that you can change the folder names in your gtb-project-config.json)*
+
+
+**Method 1:**
+After installing gtb run `gtb` in your terminal and choose "Create a new project". Enter the name of your app, the name doesn't have to be the same as the folder name so you can just write "cat" instead of "cat-facts-generator".
+![method1](https://i.imgur.com/4vmr4ck.png)
+
+**Method 2:** If you don't want to add and persist the project and you just want to run it navigate to the project directory in the terminal and run ``` gtb . ```
+![method2](https://i.imgur.com/2onSyUX.png)
+
+The default **GTB** command will process the files in development mode, run a server on ```http://localhost:9000```, and keep watching the files for changes.
+
+After running **GTB** you will see that a `build` folder was added but instead of the source files it has the processed and compiled files (app.js, app.css, lib.js, lib.css) etc. This is the folder that you want to deploy to production or upload to your FTP server.
+
+If you want a production version of your app (minified, uglified, etc.) you should run the build command: ```gtb run -n cat-facts-generator -c build:only```. See the list of commands you can run below.
 
 List of commands
 -------
  - ``` gtb ``` - List of gtb features
  - ``` gtb projects``` - List all of your projects and pick one to run
- - ``` gtb . ``` - Run current directory that's opened in terminal
- - ``` gtb run -n example ``` -  Run the project with the name "example", if - "example" doesn't exist in your projects, a prompt will be shown to add it
- - ``` gtb run -n example -c copy:images ``` - Execute just specific gulp task on the project
-  
--------------------------
-# Commands to implement:
+ - ``` gtb . ``` - Run current directory that's opened in the terminal
+ - ``` gtb run -n example ``` -  Run the project with the name "example", if - "example" doesn't exist in your projects, gtb will ask you to add it
+ - ``` gtb run -n example -c process:js ``` - Execute just specific gulp task on the project
 
-- ``` gtb build example ``` - shorthand for building a project in production mode
-- ``` gtb -n example -c compile:sass, copy:images, server``` - execute a specific list of tasks on the project
-
-# Features to implement
-
- - automatically remove console.logs in production mode
- - synchronize clicks, forms and inputs if debugging the project on multiple devices at once
- - FTP integration
- - integrate fontello api for easier downloading and management of icons without the hassle of extracting archives, copying and pasting files
- - minify class names
- - LESS compile support
- - if using angular put all the .html templates in angular templateCache so they're not loaded separately
- - use cachebusting (i.e app.js?ver=134818) for getting the hash value of the files, to prevent the browser from caching js/css files that we need to be updated  
- - use Andy Osmani's critical css plugin for extracting critical css to the head of the page, so the user can see the content faster
- - use gulp-spritesmith for joining small png files together in a sprite and automatically generate css for them
+ List of gulp tasks
+-------
+- **process** : runs the process task for html, css, js, bower, fonts and images
+- **process:html**: compiles jade, minifies html, adds templates to $templateCache
+- **process:css**: compiles .sass, includes global sass imports, runs postcss tasks, runs autoprefixer, minifies and concatenates everything into app.css
+- **process:js**: compiles .coffeescript, convert es6 to es5 with babel, annotates angular files, minifies and concatenates everything into app.js
+- **process:bower**: processes files from bower, joins main files into lib.js and lib.css
+- **process:fonts**: copies fonts
+- **process:images**: compresses images
+- **server**: runs the server and serves the current files from the build directory
+- **watch**: watches files for changes and executes the process task for the file type
+- **build:only**: builds the project in production mode
+- **build:serve**: builds the project in production mode and run the server 
