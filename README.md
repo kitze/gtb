@@ -104,7 +104,7 @@ List of commands
  - ``` gtb run -n example ``` -  Run the project with the name "example", if - "example" doesn't exist in your projects, gtb will ask you to add it
  - ``` gtb run -n example -c process:js ``` - Execute just specific gulp task on the project
 
- List of gulp tasks
+List of gulp tasks
 -------
 - **process** : runs the process task for html, css, js, bower, fonts and images
 - **process:html**: compiles jade, minifies html, adds templates to $templateCache
