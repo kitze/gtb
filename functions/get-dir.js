@@ -34,8 +34,13 @@ var files = function files(fileType, directory) {
   return finalPaths;
 };
 
+var file = function file(name) {
+  return global.prefix + name;
+};
+
 module.exports = {
   build: build,
   src: src,
-  files: files
+  files: files,
+  file: file
 };
