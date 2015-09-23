@@ -6,7 +6,8 @@ module.exports = function (gulp, plugins, config) {
   var processes = {
     css: require('../tasks/process/process-css')(gulp, plugins, config),
     js: require('../tasks/process/process-js')(gulp, plugins, config),
-    html: require('../tasks/process/process-html')(gulp, plugins, config)
+    html: require('../tasks/process/process-html')(gulp, plugins, config),
+    images: require('../tasks/process/process-images')(gulp, plugins, config)
   };
 
   function watcher(fileTypes, directory, process) {
@@ -20,6 +21,6 @@ module.exports = function (gulp, plugins, config) {
 
     watcher(['html', 'jade'], 'root', processes.html);
     watcher(['scss', 'sass', 'css'], 'css', processes.css);
-    watcher(['coffee', 'js'], 'js', processes.js);
+    watcher(['*'], 'images', processes.images);
   }
 };
