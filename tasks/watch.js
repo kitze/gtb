@@ -21,6 +21,7 @@ module.exports = function (gulp, plugins, config) {
 
     watcher(['html', 'jade'], 'root', processes.html);
     watcher(['scss', 'sass', 'css'], 'css', processes.css);
+    watcher(['js', 'coffee'], 'js', processes.js);
     watcher(['*'], 'images', processes.images);
   }
 };
