@@ -27,7 +27,8 @@ module.exports = function () {
   addTaskFolder('process', ['html', 'css', 'js', 'bower', 'fonts', 'images']);
   addTaskFolder('clean', ['build', 'rev']);
   addTaskFolder('build', ['only', 'serve']);
-  addTaskFolder('copy', ['build', 'json']);
+  addTaskFolder('copy', ['build', 'other']);
+  addTaskFolder('deploy', ['surge']);
 
   /*  ================== Tasks ================== */
 

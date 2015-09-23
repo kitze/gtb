@@ -13,7 +13,9 @@ module.exports = function () {
           });
           return;
         }
-        callback();
+        runSequence('copy:other', function () {
+          callback();
+        });
       });
   }
 };
