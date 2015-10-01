@@ -54,7 +54,7 @@
     "prompt": "0.2.14",
     "protractor": "2.3.0",
     "q": "1.4.1",
-    "run-sequence": "1.1.2",
+    "run-sequence": "1.1.4",
     "shelljs": "0.5.3",
     "underscore": "1.7.0",
     "yargs": "1.2.1"
