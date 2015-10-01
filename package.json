@@ -2,7 +2,7 @@
   "name": "gtb",
   "version": "0.9.2",
   "dependencies": {
-    "browser-sync": "2.9.7",
+    "browser-sync": "2.9.8",
     "chalk": "1.1.1",
     "connect-history-api-fallback": "1.1.0",
     "deferred": "0.7.3",
