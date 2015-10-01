@@ -41,7 +41,7 @@
     "gulp-watch": "4.3.5",
     "gulp-zip": "0.1.2",
     "imagemin-pngquant": "4.2.0",
-    "inquirer": "0.8.5",
+    "inquirer": "0.10.1",
     "json-file-plus": "2.0.0",
     "jsonfile": "2.2.2",
     "lazypipe": "1.0.1",
