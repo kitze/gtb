@@ -37,7 +37,7 @@
     "gulp-sass": "2.0.4",
     "gulp-selectors": "0.1.8",
     "gulp-sourcemaps": "1.2.8",
-    "gulp-uglify": "1.4.0",
+    "gulp-uglify": "1.4.1",
     "gulp-watch": "4.3.5",
     "gulp-zip": "0.1.2",
     "imagemin-pngquant": "4.2.0",
