@@ -42,7 +42,7 @@
     "gulp-zip": "0.1.2",
     "imagemin-pngquant": "4.2.0",
     "inquirer": "0.8.5",
-    "json-file-plus": "2.0.0",
+    "json-file-plus": "3.2.0",
     "jsonfile": "2.2.2",
     "lazypipe": "1.0.1",
     "main-bower-files": "2.9.0",
