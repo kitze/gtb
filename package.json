@@ -49,7 +49,7 @@
     "map-stream": "0.0.5",
     "merge-stream": "1.0.0",
     "moment": "2.10.6",
-    "ncp": "1.0.1",
+    "ncp": "2.0.0",
     "open": "0.0.5",
     "prompt": "0.2.14",
     "protractor": "2.3.0",
