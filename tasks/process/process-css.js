@@ -17,7 +17,13 @@ module.exports = function (gulp, plugins) {
       .pipe(plugins.cssGlobbing({ //replace global imports (@import some-folder/*) with multiple import lines that node-sass can understand
         extensions: ['.css', '.scss']
       }))
-      .pipe(plugins.sass({includePaths: [global.prefix + directories.bower + "/"]})); //compile sass files into css (include paths is an array of directories where node-sass can look for files when @import-ing them)
+      .pipe(plugins.sourcemaps.init())
+      .pipe(plugins.sass({
+        includePaths: [global.prefix + directories.bower + "/"],
+        errLogToConsole: true,
+        sourceComments: 'map',
+        sourceMap: 'sass'
+      })); //compile sass files into css (include paths is an array of directories where node-sass can look for files when @import-ing them)
 
     var cssStream = gulp.src(getDir.files("css", "css"));
 
@@ -26,11 +32,12 @@ module.exports = function (gulp, plugins) {
       .pipe(plugins.concat('app.css'))// concatenate everything into app.css file
       .pipe(plugins.autoprefixer({browsers: ['last 2 version']})) // autoprefix the needed css properties so the css is supported on the last 2 versions of every browser
       .pipe(plugins.if(!global.isProduction, plugins.cssbeautify())) //if not in production mode beautify the code so we can easily read the source
-      .pipe(plugins.combineMediaQueries({log:false}))
+      .pipe(plugins.combineMediaQueries({log: false}))
       .pipe(plugins.if(global.isProduction, plugins.minifyCss({keepSpecialComments: '*'}))) // if in production mode minify/uglify the css
       .pipe(plugins.if(global.isProduction, plugins.rev()))
       .pipe(gulp.dest(getDir.build(directories.css))) // place the app.css files into the build/css folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
+      .pipe(plugins.sourcemaps.write(getDir.build('maps') + "/"))
       .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/appcss'))))
       .pipe(browserSync.server.stream());
   }

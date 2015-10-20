@@ -36,7 +36,7 @@
     "gulp-rev": "5.1.0",
     "gulp-sass": "2.0.4",
     "gulp-selectors": "0.1.8",
-    "gulp-sourcemaps": "1.2.8",
+    "gulp-sourcemaps": "^1.2.8",
     "gulp-uglify": "1.4.0",
     "gulp-watch": "4.3.5",
     "gulp-zip": "0.1.2",
@@ -44,6 +44,7 @@
     "inquirer": "0.8.5",
     "json-file-plus": "2.0.0",
     "jsonfile": "2.2.2",
+    "kitze-js-helpers": "^1.4.0",
     "lazypipe": "1.0.1",
     "main-bower-files": "2.9.0",
     "map-stream": "0.0.5",
@@ -57,7 +58,8 @@
     "run-sequence": "1.1.2",
     "shelljs": "0.4.0",
     "underscore": "1.7.0",
-    "yargs": "1.2.1"
+    "yargs": "1.2.1",
+    "gulp-combine-media-queries": "0.2.0"
   },
   "engines": {
     "node": ">=0.8.0"
@@ -86,8 +88,5 @@
   "bugs": {
     "url": "https://github.com/kitze/gtb/issues"
   },
-  "homepage": "https://github.com/kitze/gtb",
-  "devDependencies": {
-    "gulp-combine-media-queries": "0.2.0"
-  }
+  "homepage": "https://github.com/kitze/gtb"
 }
