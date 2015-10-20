@@ -14,12 +14,6 @@ var fs                   = require('fs'),
     writeBowerConfig     = require('./functions/write-bower-config'),
     fixGitIgnore         = require('./functions/fix-git-ignore');
 
-/* If you add this repository as a submodule of any other app it will live in a folder inside of that app. So that's why the default
- * prefix is ".." and it's telling the gulp tasks where to look for your files (in this case, one folder backwards).
- * Another thing you can do is just pull this repository somewhere on your pc and if you want to run any app just add it's full path
- * to the prefix property, so you can have just one gulp folder on your pc that will run all of your apps.
- * */
-
 var gtbMethods = {
   run: function () {
     if (projectNameFromArguments() === undefined) {
