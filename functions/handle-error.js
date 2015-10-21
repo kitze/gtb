@@ -1,4 +1,4 @@
-var notifier = require('gulp-notify/node_modules/node-notifier');
+var notifier = require('node-notifier');
 var con = require('../functions/console');
 var chalk = require('chalk');
 

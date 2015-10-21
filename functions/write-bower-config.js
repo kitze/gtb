@@ -1,11 +1,11 @@
-var fs                       = require('fs'),
-    jsonFile                 = require('jsonfile'),
-    _                        = require('underscore'),
-    readFile                 = jsonFile.readFileSync,
-    writeFile                = jsonFile.writeFileSync,
-    fileExists               = fs.existsSync,
-    gulpConfig               = require('../functions/gulp-config'),
-    files                    = require('../config/files-config');
+var fs         = require('fs'),
+    jsonFile   = require('jsonfile'),
+    _          = require('underscore'),
+    readFile   = jsonFile.readFileSync,
+    writeFile  = jsonFile.writeFileSync,
+    fileExists = fs.existsSync,
+    gulpConfig = require('../functions/gulp-config'),
+    files      = require('../config/files-config');
 
 module.exports = function () {
   var bowerConfig = {

@@ -1,7 +1,7 @@
 var chalk = require('chalk');
 var moment = require('moment');
 
-function timestamp(){
+function timestamp() {
   return "[" + chalk.gray(new moment().format("HH:mm:ss")) + "]";
 }
 
@@ -18,7 +18,12 @@ module.exports = {
   hint: function () {
     log(chalk.green.bold.apply(this, arguments));
   },
-  custom: function(){
+  custom: function () {
     this.log.apply(this, arguments);
+  },
+  errorWithSpaces: function (text) {
+    console.log('\n');
+    this.err(text);
+    console.log('\n');
   }
 };
