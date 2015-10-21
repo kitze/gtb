@@ -49,6 +49,7 @@ initialize();
  gtb list -- lists projects
  gtb add -- adds a new project
  gtb add . -- adds the current project to gtb
+ gtb  ohtell -- removes project from gtb
  gtb . -- runs current directory
  gtb . -p -- runs current directory in production mode
  gtb . -p -t process:css -- runs the process:css task in production mode
@@ -66,6 +67,7 @@ function initialize() {
     .option('-p, --production', 'option: Set production mode')
     .option('list', 'command: List all the projects')
     .option('add [add]', 'command: Adds a new project to gtb')
+    .option('deploy [deploy]', 'command: Deploys project to surge.sh')
     .option('.')
     .parse(process.argv);
 
@@ -91,6 +93,18 @@ function initialize() {
     if (program.list) {
       console.log('program.list');
       listProjects();
+      return;
+    }
+
+    //deploys project
+    if (program.deploy) {
+      var foundProject = getProjectByName(program.deploy);
+      if (foundProject === undefined) {
+        con.err(`Project with that name wasn't found.`);
+        displayGtbActions();
+        return;
+      }
+      runProject(foundProject, 'deploy:surge');
       return;
     }
 
@@ -214,16 +228,6 @@ function listProjects() {
 
 function performAction(project) {
 
-  console.log('performing action on', project);
-
-  /*var actionsToImplement = [
-   'Build production version',
-   'Run production version',
-   'Deploy production version to surge.sh',
-   'Perform a single task',
-   'Edit project',
-   ];*/
-
   var actions = [
     {
       name: 'Run',
@@ -231,6 +235,27 @@ function performAction(project) {
         con.log(`Running project "${project.name}"...`);
         console.log('running project', project);
         runProject(project);
+      }
+    },
+    {
+      name: 'Build production version',
+      value: function () {
+        con.log(`Building production version of project "${project.name}"...`);
+        runProject(project, 'build');
+      }
+    },
+    {
+      name: 'Build and run production version',
+      value: function () {
+        con.log(`Running production version of project "${project.name}"...`);
+        runProject(project, 'build:serve');
+      }
+    },
+    {
+      name: 'Deploy production version to surge.sh',
+      value: function () {
+        console.log('running project', project);
+        runProject(project, 'deploy:surge');
       }
     },
     {
