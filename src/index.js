@@ -85,10 +85,6 @@ function initialize() {
   }
 
   function parseArguments() {
-    console.log('parsing arguments');
-
-    console.log('gtbConfig.projects', gtbConfig.projects);
-
     //lists all the projects
     if (program.list) {
       console.log('program.list');
@@ -135,15 +131,15 @@ function initialize() {
       return;
     }
 
-    if (program.projectName && typeof program.projectName === 'string') {
-      var foundProject = getProjectByName(program.projectName);
+    if (program.name && typeof program.name === 'string') {
+      var foundProject = getProjectByName(program.name);
       if (foundProject === undefined) {
         con.err(`Project with that name wasn't found.`);
         displayGtbActions();
         return;
       }
 
-      runProject(foundProject, program.taskName);
+      runProject(foundProject, program.task);
     }
 
   }
@@ -420,17 +416,17 @@ function addNewProjectPrompt(project) {
 }
 
 function runProject(project, task) {
-
   //initialize
   global.prefix = project.location;
   con.log(project.location);
 
   //write configs and gitignore
-  writeGulpConfigFiles();
-  writeBowerConfig();
-  fixGitIgnore();
+  writeGulpConfigFiles().then(function () {
+    writeBowerConfig();
+    fixGitIgnore();
 
-  //gulp
-  require('../tasks/all-gulp-tasks')();
-  runSequence(task ? task : 'default');
+    //gulp
+    require('../tasks/all-gulp-tasks')();
+    runSequence(task ? task : 'default');
+  });
 }
