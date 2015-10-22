@@ -30,6 +30,9 @@ module.exports = function (gulp, plugins, config) {
 
     /* Merge jade/html streams before proceeding with the task */
     var es = eventStream.merge(jadeStream, htmlStream)
+      .on('end', function () {
+        browserSync.server.reload();
+      })
       .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions))) // if running task in production mode minify html
       .pipe(filters.excludePartials)
       .pipe(gulp.dest(getDir.build(directories.root))) // place the processed .html files accordingly in the folders they belong to
@@ -44,10 +47,6 @@ module.exports = function (gulp, plugins, config) {
       .pipe(gulp.dest(getDir.build(directories.js)))
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
       .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/templates'))));
-
-    es.on('end', function () {
-      browserSync.server.reload();
-    });
 
     return es;
 

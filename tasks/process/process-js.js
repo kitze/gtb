@@ -30,7 +30,9 @@ module.exports = function (gulp, plugins, config) {
     var jsStream = gulp.src(getDir.files('js', 'js')); // add .js file to current event stream
 
     /* Merge both js/coffeescript streams before continuing the task */
-    var es = eventStream.merge(coffeeScriptStream, jsStream)
+    var es = eventStream.merge(coffeeScriptStream, jsStream).on('end', function () {
+      browserSync.server.reload();
+    })
       .pipe(plugins.plumber({errorHandler: handleError})) // prevents breaking the watcher on an error, just print it out in the console
       .pipe(plugins.concat('app.js')) //concatenate them into an app.js file
       .pipe(plugins.babel()) // transpile es6 code to es5
@@ -40,11 +42,8 @@ module.exports = function (gulp, plugins, config) {
       .pipe(plugins.if(global.isProduction, plugins.rev()))
       .pipe(gulp.dest(getDir.build(directories.js))) //place the app.js file into the build folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-      .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/appjs'))));
+      .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/appjs'))))
 
-    es.on('end', function () {
-      browserSync.server.reload();
-    });
     return es;
   }
 };

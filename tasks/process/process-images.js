@@ -11,14 +11,14 @@ module.exports = function (gulp, plugins) {
     con.hint('Processing images ...');
 
     return gulp.src(getDir.files('*', 'images'))
+      .on('end', function () {
+        browserSync.server.reload();
+      })
       .pipe(plugins.if(global.isProduction, plugins.imagemin({
         progressive: true,
         use: [pngquant()],
         verbose: undefined
       })))
-      .pipe(gulp.dest(getDir.build(directories.images)))
-      .on('end', function () {
-        browserSync.server.reload();
-      });
+      .pipe(gulp.dest(getDir.build(directories.images)));
   }
 };
