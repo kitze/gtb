@@ -1,6 +1,6 @@
 module.exports = function (gulp, plugins, config) {
   var getDir = require('../functions/get-dir');
-  var notifier = require('gulp-notify/node_modules/node-notifier');
+  var notifier = require('node-notifier');
   var con = require('../functions/console');
 
   var processes = {

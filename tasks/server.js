@@ -1,7 +1,7 @@
 module.exports = function () {
   var browserSync = require('../classes/browser-sync'),
       con         = require('../functions/console'),
-      notifier    = require('gulp-notify/node_modules/node-notifier');
+      notifier    = require('node-notifier');
 
   return function () {
     con.hint('Starting server...');
