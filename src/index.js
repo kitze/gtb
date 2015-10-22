@@ -238,19 +238,30 @@ function getProjectByName(name) {
   return _.findWhere(gtbConfig.projects, {name: name});
 }
 
-function listProjects() {
+function checkNumberOfProjects() {
   var projects = gtbConfig.projects;
-
   if (projects.length === 0) {
     con.hint(`You don't have any projects in gtb yet, so let's add your first one!`);
     addNewProjectPrompt();
-    return;
+    return 0;
   }
 
   // If there's only run project run that one by default *!/
   if (projects.length === 1) {
     con.hint(`You only have one project in gtb, choosing that one by default.`);
     performAction(projects[0]);
+    return 1;
+  }
+
+  return projects.length;
+}
+
+function listProjects() {
+  var projects = gtbConfig.projects;
+
+  var numberOfProjects = checkNumberOfProjects();
+
+  if (numberOfProjects < 2) {
     return;
   }
 
@@ -320,6 +331,12 @@ function performAction(project) {
 }
 
 function displayGtbActions(project) {
+
+  var numberOfProjects = checkNumberOfProjects();
+
+  if (numberOfProjects < 2) {
+    return;
+  }
 
   var actions = [
     {
