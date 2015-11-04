@@ -7,9 +7,15 @@ module.exports = function (gulp, plugins, config) {
   var eventStream = require('event-stream');
   var minifyHtmlOptions = require('../../config/html-minify-config');
   var directories = require('../../config/directories-config');
+  var postHtmlBemConfig = require('../../config/posthtml-bem-config');
+  var postHtmlBem = require('posthtml-bem');
 
   return function () {
     con.hint('Processing html ...');
+
+    var postHtmlPlugins = [
+      postHtmlBem(postHtmlBemConfig)
+    ];
 
     var filters = {
       excludePartials: plugins.filter(function (file) {
@@ -33,6 +39,7 @@ module.exports = function (gulp, plugins, config) {
       .on('end', function () {
         browserSync.server.reload();
       })
+      .pipe(plugins.posthtml(postHtmlPlugins))
       .pipe(plugins.if(global.isProduction, plugins.minifyHtml(minifyHtmlOptions))) // if running task in production mode minify html
       .pipe(filters.excludePartials)
       .pipe(gulp.dest(getDir.build(directories.root))) // place the processed .html files accordingly in the folders they belong to
