@@ -20,9 +20,7 @@ module.exports = function (gulp, plugins) {
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.sass({
         includePaths: [global.prefix + directories.bower + "/"],
-        errLogToConsole: true,
-        sourceComments: 'map',
-        sourceMap: 'sass'
+        errLogToConsole: true
       })); //compile sass files into css (include paths is an array of directories where node-sass can look for files when @import-ing them)
 
     var cssStream = gulp.src(getDir.files("css", "css"));
@@ -37,7 +35,6 @@ module.exports = function (gulp, plugins) {
       .pipe(plugins.if(global.isProduction, plugins.rev()))
       .pipe(gulp.dest(getDir.build(directories.css))) // place the app.css files into the build/css folder of the project
       .pipe(plugins.if(global.isProduction, plugins.rev.manifest()))
-      .pipe(plugins.sourcemaps.write(getDir.build('maps') + "/"))
       .pipe(plugins.if(global.isProduction, gulp.dest(getDir.build('rev/appcss'))))
       .pipe(browserSync.server.stream());
   }
