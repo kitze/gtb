@@ -5,7 +5,7 @@ import {existsSync}  from 'fs';
 import path from 'path';
 
 //node_modules
-import _ from 'underscore';
+import _ from 'lodash';
 import runSequence from 'run-sequence';
 import shell from 'shelljs/global';
 import inq from 'inquirer';

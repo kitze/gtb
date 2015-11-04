@@ -14,9 +14,9 @@ var _path2 = _interopRequireDefault(_path);
 
 //node_modules
 
-var _underscore = require('underscore');
+var _lodash = require('lodash');
 
-var _underscore2 = _interopRequireDefault(_underscore);
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _runSequence = require('run-sequence');
 
@@ -125,7 +125,7 @@ function initialize() {
   addCliCommands();
 
   //if gtb-config doesn't exist, create it then read it and parse the cli arguments
-  if (_underscore2['default'].isUndefined(gtbConfig)) {
+  if (_lodash2['default'].isUndefined(gtbConfig)) {
     _functionsConsole2['default'].log('Creating gtb-config for the first time...');
     (0, _jsonfile.writeFile)(gtbConfigPath, {
       projects: []
@@ -146,8 +146,8 @@ function checkIfCommandExists(name) {
 }
 
 function parseArguments() {
-  var commandWasExecuted = _underscore2['default'].some(gtbCommands, function (command) {
-    return checkIfCommandExists(command.name) && _underscore2['default'].every(command.depends, checkIfCommandExists);
+  var commandWasExecuted = _lodash2['default'].some(gtbCommands, function (command) {
+    return checkIfCommandExists(command.name) && _lodash2['default'].every(command.depends, checkIfCommandExists);
   });
 
   if (!commandWasExecuted) {
@@ -258,7 +258,7 @@ function readGtbConfig() {
 
   if (gtbConfigValidation.errors.length > 0) {
     _functionsConsole2['default'].err('Errors in gtb-config file:');
-    _underscore2['default'].each(gtbConfigValidation.errors, function (error) {
+    _lodash2['default'].each(gtbConfigValidation.errors, function (error) {
       _functionsConsole2['default'].log(error.stack);
     });
     exit(-1);
@@ -268,7 +268,7 @@ function readGtbConfig() {
 }
 
 function getProjectByName(name) {
-  return _underscore2['default'].findWhere(gtbConfig.projects, { name: name });
+  return _lodash2['default'].findWhere(gtbConfig.projects, { name: name });
 }
 
 function checkNumberOfProjects() {
@@ -310,7 +310,7 @@ function listProjects() {
 
 function deleteProject(project) {
   _functionsConsole2['default'].hint('The project "' + project.name + '" was successfully deleted!');
-  gtbConfig.projects = _underscore2['default'].filter(gtbConfig.projects, function (p) {
+  gtbConfig.projects = _lodash2['default'].filter(gtbConfig.projects, function (p) {
     return p.name !== project.name;
   });
   updateGtbConfig(true, gtbConfig);
@@ -423,9 +423,9 @@ function validateNewProjectName(name) {
     return false;
   }
 
-  var projectWithSameName = _underscore2['default'].findWhere(gtbConfig.projects, { name: name });
+  var projectWithSameName = _lodash2['default'].findWhere(gtbConfig.projects, { name: name });
 
-  if (!_underscore2['default'].isUndefined(projectWithSameName)) {
+  if (!_lodash2['default'].isUndefined(projectWithSameName)) {
     _functionsConsole2['default'].errorWithSpaces('Project with that name already exists, please choose another name!');
     return false;
   }
@@ -448,11 +448,11 @@ function validateNewProjectPath(path) {
     return false;
   }
 
-  var projectWithSamePath = _underscore2['default'].find(gtbConfig.projects, function (project) {
+  var projectWithSamePath = _lodash2['default'].find(gtbConfig.projects, function (project) {
     return project.location === path || project.location === path + '/';
   });
 
-  if (!_underscore2['default'].isUndefined(projectWithSamePath)) {
+  if (!_lodash2['default'].isUndefined(projectWithSamePath)) {
     _functionsConsole2['default'].errorWithSpaces('Project with that path already exists, please choose another path!');
     return false;
   }
@@ -507,7 +507,7 @@ function addNewProjectPrompt(existingProject) {
   }
 
   _inquirer2['default'].prompt(questions, function (newProject) {
-    saveNewProject(existingProject !== undefined ? _underscore2['default'].extend(existingProject, newProject) : newProject);
+    saveNewProject(existingProject !== undefined ? _lodash2['default'].extend(existingProject, newProject) : newProject);
   });
 }
 
