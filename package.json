@@ -1,6 +1,6 @@
 {
   "name": "gtb",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "dependencies": {
     "browser-sync": "2.9.11",
     "chalk": "1.1.1",
