@@ -22,12 +22,12 @@ var files = function files(fileType, directory) {
     finalPaths = [src(directory + '**/*.' + fileType), src(directory + '*.' + fileType)];
   }
   else if (!oneFileType && (!directory || oneDirectory)) {
-    _(fileType).each(function (type) {
+    _.each(fileType, function (type) {
       finalPaths = finalPaths.concat(files(type, directory));
     });
   }
   else if (oneFileType && (!directory || !oneDirectory)) {
-    _(directory).each(function (dir) {
+    _.each(directory, function (dir) {
       finalPaths = finalPaths.concat(files(fileType, dir));
     });
   }
