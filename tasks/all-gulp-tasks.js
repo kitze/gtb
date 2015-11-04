@@ -1,5 +1,5 @@
 var gulp                 = require('gulp'),
-    _                    = require('underscore'),
+    _                    = require('lodash'),
     con                  = require('../functions/console'),
     files                = require('../config/files-config'),
     plugins              = require('gulp-load-plugins')({config: files.PACKAGE_JSON}),

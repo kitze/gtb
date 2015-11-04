@@ -1,6 +1,6 @@
 module.exports = function () {
 
-  var _ = require('underscore');
+  var _ = require('lodash');
 
   var bowerFontTemplates = {
     bootstrap: {

@@ -1,6 +1,6 @@
 var fs                       = require('fs'),
     jsonFile                 = require('jsonfile'),
-    _                        = require('underscore'),
+    _                        = require('lodash'),
     readFile                 = jsonFile.readFile,
     readFileSync             = jsonFile.readFileSync,
     writeFile                = jsonFile.writeFile,

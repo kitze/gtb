@@ -2,7 +2,7 @@ module.exports = function (gulp, plugins, config) {
 
   var getAllBowerFiles = require('../../functions/get-all-bower-files')(gulp, plugins, config);
   var getAdditionalFonts = require('../../functions/get-additional-fonts')(gulp, plugins, config);
-  var _ = require('underscore');
+  var _ = require('lodash');
   var map = require('map-stream');
   var path = require('path');
   var getDir = require('../../functions/get-dir');

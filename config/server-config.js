@@ -1,6 +1,6 @@
 var historyApiFallback = require('connect-history-api-fallback'),
     directories        = require('../config/directories-config'),
-    _                  = require('underscore');
+    _                  = require('lodash');
 
 module.exports = function () {
 

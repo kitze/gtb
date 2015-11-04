@@ -1,6 +1,6 @@
 module.exports = function (gulp, plugins, config) {
 
-  var _ = require('underscore');
+  var _ = require('lodash');
   var directories = require('../config/directories-config');
 
   return function (obj, libType) {

@@ -1,5 +1,5 @@
 var directories = require('../config/directories-config');
-var _ = require('underscore');
+var _ = require('lodash');
 
 var build = function build(folderName) {
   folderName = folderName || '';

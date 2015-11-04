@@ -1,7 +1,7 @@
 var fs         = require('fs'),
     os         = require('os'),
     con        = require('../functions/console'),
-    _          = require('underscore'),
+    _          = require('lodash'),
     fileExists = fs.existsSync,
     files      = require('../config/files-config');
 
