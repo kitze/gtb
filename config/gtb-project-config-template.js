@@ -9,6 +9,7 @@ module.exports = {
     images: 'img',
     fonts: 'fonts',
     font: 'font',
-    bower: 'bower_components'
+    bower: 'bower_components',
+    json: 'json'
   }
 };

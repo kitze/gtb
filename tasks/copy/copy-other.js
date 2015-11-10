@@ -8,5 +8,8 @@ module.exports = function (gulp) {
 
     gulp.src(getDir.file('CNAME'))
       .pipe(gulp.dest(getDir.build('')));
+
+    gulp.src(getDir.files('*', 'json'))
+      .pipe(gulp.dest(getDir.build(directories.json)));
   }
 };
