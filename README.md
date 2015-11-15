@@ -94,15 +94,15 @@ The default **GTB** command will process the files in development mode, run a se
 
 After running **GTB** you will see that a `build` folder was added but instead of the source files it has the processed and compiled files (app.js, app.css, lib.js, lib.css) etc. This is the folder that you want to deploy to production or upload to your FTP server.
 
-If you want a production version of your app (minified, uglified, etc.) you should run the build command: ```gtb run -n cat-facts-generator -c build:only```. See the list of commands you can run below.
+If you want a production version of your app (minified, uglified, etc.) you should run the build command: ```gtb -n cat-facts-generator -t build:only```. See the list of commands you can run below.
 
 List of commands
 -------
  - ``` gtb ``` - List of gtb features
- - ``` gtb projects``` - List all of your projects and pick one to run
+ - ``` gtb list``` - List all of your projects and pick one to run
  - ``` gtb . ``` - Run current directory that's opened in the terminal
- - ``` gtb run -n example ``` -  Run the project with the name "example", if - "example" doesn't exist in your projects, gtb will ask you to add it
- - ``` gtb run -n example -c process:js ``` - Execute just specific gulp task on the project
+ - ``` gtb -n example ``` -  Run the project with the name "example", if `example` doesn't exist in your projects, gtb will ask you to add it
+ - ``` gtb -n example -t process:js ``` - Execute the gulp task named `process:js` on the project `example`
 
 List of gulp tasks
 -------
