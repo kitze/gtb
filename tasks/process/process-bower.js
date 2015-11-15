@@ -1,31 +1,35 @@
+var _ = require('lodash');
+var map = require('map-stream');
+var path = require('path');
+var notifier = require('node-notifier');
+var eventStream = require('event-stream');
+var q = require('q');
+
 module.exports = function (gulp, plugins, config) {
 
-  var getAllBowerFiles = require('../../functions/get-all-bower-files')(gulp, plugins, config);
-  var getAdditionalFonts = require('../../functions/get-additional-fonts')(gulp, plugins, config);
-  var _ = require('lodash');
-  var map = require('map-stream');
-  var path = require('path');
-  var getDir = require('../../functions/get-dir');
-  var notifier = require('node-notifier');
-  var con = require('../../functions/console');
-  var eventStream = require('event-stream');
-  var Q = require('Q');
-  var directories = require('../../config/directories-config');
-
-  var jsFilter     = plugins.filter('**/*.js'),
-      cssFilter    = plugins.filter(['*.css', '**/*.css']),
-      assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
-
-  var additionalFonts = [];
-
-  function keepOriginal(url) {
-    return _.some(additionalFonts, function (font) {
-      return font.escapeUrl.test(url);
-    });
-  }
-
   return function () {
-    var deferred = Q.defer();
+
+    var directories = require('../../config/directories-config');
+    var con = require('../../functions/console');
+    var getDir = require('../../functions/get-dir');
+    var getAllBowerFiles = require('../../functions/get-all-bower-files')(gulp, plugins, config);
+    var getAdditionalFonts = require('../../functions/get-additional-fonts')(gulp, plugins, config);
+
+    var jsFilter     = plugins.filter('**/*.js'),
+        cssFilter    = plugins.filter(['*.css', '**/*.css']),
+        assetsFilter = plugins.filter(['!**/*.js', '!**/*.css', '!**/*.scss']);
+
+    var additionalFonts = [];
+
+    function keepOriginal(url) {
+      return _.some(additionalFonts, function (font) {
+        return font.escapeUrl.test(url);
+      });
+    }
+
+    //init
+
+    var deferred = q.defer();
     con.hint('Processing bower ...');
 
     getAllBowerFiles().then(function (bowerFiles) {
