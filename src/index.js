@@ -22,6 +22,7 @@ import writeBowerConfig from '../functions/write-bower-config';
 import fixGitIgnore from '../functions/fix-git-ignore';
 import jsonSchemas from '../config/json-schemas-config';
 import platformHelpers from '../functions/platform-helpers';
+import gulpTasks from '../tasks/all-gulp-tasks';
 
 //globals
 global.isProduction = false;
@@ -502,12 +503,12 @@ function runProject(project, task, displayLog) {
     writeBowerConfig();
 
     //only fix gitignore if the user hasn't specified a task to run
-    if (task === undefined || task === undefined) {
+    if (task === undefined) {
       fixGitIgnore();
     }
 
     //gulp
-    require('../tasks/all-gulp-tasks')();
+    gulpTasks.load();
     runSequence(task === undefined ? 'default' : task);
   });
 }
