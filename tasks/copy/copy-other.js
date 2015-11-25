@@ -14,5 +14,8 @@ module.exports = function (gulp) {
 
     gulp.src(getDir.file('favicon.ico'))
       .pipe(gulp.dest(getDir.build(directories.root)));
+
+    gulp.src(getDir.file('robots.txt'))
+      .pipe(gulp.dest(getDir.build(directories.root)));
   }
 };
