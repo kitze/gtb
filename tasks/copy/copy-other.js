@@ -12,10 +12,10 @@ module.exports = function (gulp) {
     gulp.src(getDir.files('*', 'json'))
       .pipe(gulp.dest(getDir.build(directories.json)));
 
-    gulp.src(getDir.file('favicon.ico'))
-      .pipe(gulp.dest(getDir.build(directories.root)));
+    gulp.src(getDir.file(directories.app + '/favicon.ico'))
+      .pipe(gulp.dest(getDir.build('')));
 
-    gulp.src(getDir.file('robots.txt'))
-      .pipe(gulp.dest(getDir.build(directories.root)));
+    gulp.src(getDir.file(directories.app + '/robots.txt'))
+      .pipe(gulp.dest(getDir.build('')));
   }
 };
