@@ -8,7 +8,7 @@ module.exports = function () {
       ['process:fonts', 'process:images', 'process:html'],
       function () {
         if (global.isProduction) {
-          runSequence('replace-rev', 'clean:rev', function () {
+          runSequence('replace-rev', 'clean:rev', 'copy:other', function () {
             callback();
           });
           return;
