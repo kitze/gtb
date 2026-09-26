@@ -60,7 +60,7 @@
     "posthtml-bem": "0.2.2",
     "prompt": "0.2.14",
     "protractor": "2.3.0",
-    "q": "1.4.1",
+    "q": "1.5.1",
     "run-sequence": "1.1.2",
     "shelljs": "0.5.3",
     "yargs": "3.27.0"
