@@ -55,7 +55,7 @@
     "moment": "2.10.6",
     "ncp": "1.0.1",
     "node-notifier": "4.3.1",
-    "open": "0.0.5",
+    "open": "11.0.4",
     "os-name": "^1.0.3",
     "posthtml-bem": "0.2.2",
     "prompt": "0.2.14",
