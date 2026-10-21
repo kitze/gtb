@@ -63,7 +63,7 @@
     "q": "1.4.1",
     "run-sequence": "1.1.2",
     "shelljs": "0.5.3",
-    "yargs": "3.27.0"
+    "yargs": "18.2.0"
   },
   "engines": {
     "node": ">=0.8.0"
