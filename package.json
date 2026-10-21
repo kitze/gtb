@@ -34,7 +34,7 @@
     "gulp-plumber": "1.0.1",
     "gulp-posthtml": "1.5.1",
     "gulp-rename": "1.2.2",
-    "gulp-replace": "0.5.4",
+    "gulp-replace": "1.1.4",
     "gulp-rev": "5.1.0",
     "gulp-sass": "2.1.0",
     "gulp-selectors": "0.1.8",
